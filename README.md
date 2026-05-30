@@ -31,7 +31,13 @@ GET /api/market · POST /api/auth/signup|login · POST /api/wallet/metamask · G
 · POST /api/orders · POST /api/orders/:id/confirm · POST /api/retire · GET /api/certificates/:id
 · GET|POST /api/admin/* (ต้องมี header x-admin-key)
 
-## เปิดรับเงินจริง (Omise — PSP ไทย: PromptPay + บัตร)
+## เปิดรับเงินจริง (PaySolutions — Thai PSP)
+1. สมัคร merchant PaySolutions/ThaiEpay (ยืนยัน use case tokenized REC กับเจ้าหน้าที่)
+2. Railway Variables: PAYMENT_MODE=paysolutions, PAYSOLUTIONS_MERCHANT_ID, PAYSOLUTIONS_API_KEY, PAYSOLUTIONS_ENDPOINT, PUBLIC_BASE_URL=https://market.rectokenasean.com
+3. ตั้ง postback URL ที่หลังบ้าน PaySolutions = https://market.rectokenasean.com/api/pay/paysolutions/postback
+4. ตรวจชื่อ field + สูตร checksum ใน src/paysolutions.js ให้ตรงเอกสารร้านค้าจริง
+
+## (ทางเลือก) Omise (Omise — PSP ไทย: PromptPay + บัตร)
 1. สมัคร dashboard.omise.co รับ public/secret key
 2. .env: `PAYMENT_MODE=omise` + ใส่ key
 3. `npm install omise`
