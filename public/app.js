@@ -51,12 +51,27 @@ const qty=()=>Math.max(0,Math.floor(Number($('buy-qty').value)||0));
 function setQ(v){ $('buy-qty').value=v; buyCalc(); }
 function buyCalc(){ $('buy-total').textContent=fmt(qty()*market.priceTHB); }
 function payTab(m){ payMethod=m; $('pm-pp').classList.toggle('on',m==='promptpay'); $('pm-cc').classList.toggle('on',m==='card'); $('pp-box').classList.toggle('hidden',m!=='promptpay'); $('cc-box').classList.toggle('hidden',m!=='card'); }
+function redirectToPSP(checkout){
+  // build + auto-submit a POST form to the PaySolutions hosted page
+  const f=document.createElement('form');
+  f.method=checkout.method||'POST'; f.action=checkout.action;
+  Object.entries(checkout.fields||{}).forEach(([k,v])=>{
+    const i=document.createElement('input'); i.type='hidden'; i.name=k; i.value=v; f.appendChild(i);
+  });
+  document.body.appendChild(f); f.submit();
+}
 async function doBuy(){
   const q=qty(); if(q<=0) return toast('ใส่จำนวน REC');
   $('pay-btn').disabled=true; $('pay-btn').innerHTML='<span class="loader"></span> กำลังประมวลผล...';
-  try{ const {order}=await api('/api/orders',{method:'POST',body:JSON.stringify({qty:q,method:payMethod})});
+  try{
+    const {order,payment}=await api('/api/orders',{method:'POST',body:JSON.stringify({qty:q,method:payMethod})});
+    if(payment && payment.status==='redirect' && payment.checkout){
+      redirectToPSP(payment.checkout); return; // leaves page -> PaySolutions
+    }
+    // mock / instant providers
     await api('/api/orders/'+order.id+'/confirm',{method:'POST'}); toast('ซื้อสำเร็จ +'+q+' REC'); show('home');
-  }catch(e){ toast(e.message); } $('pay-btn').disabled=false; $('pay-btn').textContent='ยืนยันชำระเงิน';
+  }catch(e){ toast(e.message); }
+  $('pay-btn').disabled=false; $('pay-btn').textContent='ยืนยันชำระเงิน';
 }
 async function loadRetire(){ const w=await api('/api/wallet'); $('r-avail').textContent=w.user.recBalance; $('r-qty').value=w.user.recBalance; }
 async function doRetire(){
@@ -72,4 +87,5 @@ async function connectMetaMask(){
     await api('/api/wallet/metamask',{method:'POST',body:JSON.stringify({address:a[0]})}); toast('เชื่อม MetaMask แล้ว'); loadWallet();
   }catch(e){ toast(e.message); }
 }
+const _pp=new URLSearchParams(location.search); if(_pp.get('paid')) setTimeout(()=>toast('ชำระเงินสำเร็จ — REC เข้ากระเป๋าแล้ว'),600); if(_pp.get('pending')) setTimeout(()=>toast('กำลังตรวจสอบการชำระเงิน...'),600);
 loadMarket().then(()=>{ if(token) show('home'); else show('auth'); });
