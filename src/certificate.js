@@ -20,7 +20,7 @@ function renderCertificate(cert){
 </style></head><body>
 <div class="cert">
   <div class="seal">&#10003;</div>
-  <img src="/rectoken-logo.png" alt="RECTOKEN" style="width:56px;height:56px;object-fit:contain;margin-bottom:8px">
+  <img src="/rectoken-logo.jpg" alt="RECTOKEN" style="width:56px;height:56px;object-fit:contain;margin-bottom:8px">
   <div class="brand">REC MARKETPLACE &middot; RECTOKEN ASEAN</div>
   <h1>Certificate of Retirement</h1>
   <div class="muted">Renewable Energy Certificate (REC) &mdash; permanently retired</div>
