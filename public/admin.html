@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="th"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>REC Marketplace — Admin</title>
+<style>
+  body{font-family:"Segoe UI",system-ui,"Noto Sans Thai",Tahoma,sans-serif;background:#f4f6f8;color:#0e1726;margin:0;padding:20px}
+  .wrap{max-width:900px;margin:0 auto}h1{font-size:22px}
+  .card{background:#fff;border:1px solid #e6eaef;border-radius:14px;padding:16px;margin-bottom:14px}
+  .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+  .kpi{background:#f8fafc;border-radius:10px;padding:14px}.kpi .v{font-size:22px;font-weight:800}.kpi .l{font-size:12px;color:#6b7785}
+  table{width:100%;border-collapse:collapse;font-size:13px}th,td{text-align:left;padding:8px;border-bottom:1px solid #eef1f4}
+  input{padding:9px;border:1.5px solid #e6eaef;border-radius:8px;font-family:inherit}
+  button{background:#15a34a;color:#fff;border:0;padding:9px 14px;border-radius:8px;font-weight:700;cursor:pointer;font-family:inherit}
+  .flag{color:#b45309;font-weight:700}
+</style></head><body><div class="wrap">
+<h1>REC Marketplace — Admin</h1>
+<div class="card"><label style="font-size:12px;color:#6b7785">Admin key</label><br><input id="key" placeholder="ADMIN_KEY" value="admin-demo-key" style="width:240px"> <button onclick="load()">โหลดข้อมูล</button></div>
+<div id="out"></div></div>
+<script>
+async function load(){
+  const key=document.getElementById('key').value;
+  const r=await fetch('/api/admin/overview',{headers:{'x-admin-key':key}});
+  if(!r.ok){document.getElementById('out').innerHTML='<div class="card">โหลดไม่ได้ (key ผิด?)</div>';return;}
+  const d=await r.json(); const c=d.config;
+  document.getElementById('out').innerHTML=`
+   <div class="card"><div class="kpis">
+     <div class="kpi"><div class="v">฿${d.revenueTHB.toLocaleString()}</div><div class="l">รายได้ (paid)</div></div>
+     <div class="kpi"><div class="v">${c.recSold.toLocaleString()}</div><div class="l">REC ขายแล้ว</div></div>
+     <div class="kpi"><div class="v">${c.recRetired.toLocaleString()}</div><div class="l">REC retired</div></div>
+     <div class="kpi"><div class="v">${(c.treasuryRec-c.recSold).toLocaleString()}</div><div class="l">คงเหลือ treasury</div></div>
+     <div class="kpi"><div class="v">${d.counts.users}</div><div class="l">ผู้ใช้</div></div>
+     <div class="kpi"><div class="v">฿${c.priceTHB}</div><div class="l">ราคา/REC</div></div></div></div>
+   <div class="card"><b>ปรับราคา</b><br><input id="np" type="number" value="${c.priceTHB}" style="width:120px"> <button onclick="setPrice()">บันทึก</button></div>
+   <div class="card"><b>AML flags (ธุรกรรมใหญ่)</b>${d.amlFlags.length?'':'<p style="color:#6b7785;font-size:13px">ไม่มี</p>'}${d.amlFlags.map(f=>`<div class="flag">${f.ref} · ฿${f.amountTHB.toLocaleString()} · ${f.status}</div>`).join('')}</div>
+   <div class="card"><b>คำสั่งซื้อล่าสุด</b><table><tr><th>Ref</th><th>REC</th><th>฿</th><th>วิธี</th><th>สถานะ</th></tr>${d.orders.map(o=>`<tr><td>${o.ref}</td><td>${o.qty}</td><td>${o.amountTHB.toLocaleString()}</td><td>${o.method}</td><td>${o.status}${o.amlReview?' <span class="flag">⚑</span>':''}</td></tr>`).join('')}</table></div>
+   <div class="card"><b>Certificates</b><table><tr><th>ID</th><th>REC</th><th>ผู้รับ</th><th>วันที่</th></tr>${d.certificates.map(c=>`<tr><td><a href="/api/certificates/${c.id}" target="_blank">${c.id}</a></td><td>${c.amount}</td><td>${c.beneficiary}</td><td>${c.date}</td></tr>`).join('')}</table></div>`;
+}
+async function setPrice(){ const key=document.getElementById('key').value; const priceTHB=Number(document.getElementById('np').value);
+  await fetch('/api/admin/price',{method:'POST',headers:{'Content-Type':'application/json','x-admin-key':key},body:JSON.stringify({priceTHB})}); load(); }
+</script></body></html>
