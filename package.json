@@ -1,0 +1,16 @@
+{
+  "name": "rec-marketplace",
+  "version": "0.1.0",
+  "description": "REC Marketplace MVP — one-way sale of REC (Utility Token group 1) with custodial/MetaMask wallet, PromptPay/credit-card payment, and retire-to-certificate. By RECTOKEN ASEAN.",
+  "main": "server.js",
+  "type": "commonjs",
+  "scripts": { "start": "node server.js" },
+  "engines": { "node": ">=18" },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "jsonwebtoken": "^9.0.2"
+  }
+}
