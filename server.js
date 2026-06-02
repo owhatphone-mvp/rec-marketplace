@@ -29,7 +29,7 @@ function findUser(uid){ return db().users.find(u=>u.id===uid); }
 function publicUser(u){ return { id:u.id, email:u.email, walletType:u.walletType, address:u.address, recBalance:u.recBalance }; }
 
 app.get('/api/market',(req,res)=>{ const c=db().config;
-  res.json({ priceTHB:c.priceTHB, currency:c.currency, available:Math.max(0,c.treasuryRec-c.recSold), recSold:c.recSold, recRetired:c.recRetired, note:'ราคาคงที่ช่วงเปิดตัว — จะปรับไปอิง Bitkub เมื่อ REC list' });
+  res.json({ priceTHB:c.priceTHB, currency:c.currency, available:Math.max(0,c.treasuryRec-c.recSold), recSold:c.recSold, recRetired:c.recRetired, note:'ช่วงเปิดตัว ราคานี้ · หลังจากนั้นปรับเป็นราคาเฉลี่ยจาก exchange ทั่วโลก' });
 });
 
 app.post('/api/auth/signup',(req,res)=>{
