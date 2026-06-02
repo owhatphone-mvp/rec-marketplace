@@ -14,6 +14,12 @@ async function createPayment({ method, amountTHB, orderRef, orderId, email, prod
   }
 
   if (MODE === 'paysolutions') {
+    if (method === 'card') {
+      // Credit card / e-Payment: redirect to PaySolutions hosted page; confirm via inquiry poll on return.
+      const co = paysol.createCheckout({ orderId, amountTHB, productName, email });
+      return { provider: 'paysolutions', status: 'redirect', checkout: co, referenceNo: co.referenceNo,
+        message: 'Redirect to PaySolutions hosted page; confirm via inquiry poll.' };
+    }
     // PromptPay: create QR, show in-app, frontend polls /api/orders/:id/poll until paid.
     const pp = await paysol.createPromptPay({ orderId, amountTHB, productName, email });
     return { provider: 'paysolutions', status: 'awaiting_payment',
