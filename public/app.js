@@ -138,20 +138,25 @@ const _pp=new URLSearchParams(location.search); if(_pp.get('paid')) setTimeout((
 })();
 loadMarket().then(()=>{ if(token) show('home'); else show('auth'); });
 
-// ===== ฟ้า AI panel (embed iframe — ตอบในกรอบ ไม่เด้งออก) =====
-let fahLoaded=false;
-function fahToggle(){
-  const p=document.getElementById('fahPanel');
-  p.classList.toggle('show');
-  if(p.classList.contains('show') && !fahLoaded){ // โหลดฟ้าครั้งแรกที่เปิด
-    document.getElementById('fahFrame').src='https://fah.rectokenasean.com/';
-    fahLoaded=true;
-  }
-}
-function fahAsk(q){
-  // โหลดฟ้าในกรอบพร้อมส่งคำถาม (prefill ผ่าน ?q= ถ้าฟ้ารองรับ)
-  const f=document.getElementById('fahFrame');
-  f.src='https://fah.rectokenasean.com/?q='+encodeURIComponent(q);
-  fahLoaded=true;
-  const quick=document.getElementById('fahQuick'); if(quick) quick.style.display='none'; // ซ่อนปุ่มไกด์ ให้กรอบฟ้าเต็ม
+// ===== ฟ้า AI panel (ตอบในกรอบเลย — โหมดผู้ช่วยซื้อขาย/retire) =====
+function fahToggle(){ document.getElementById('fahPanel').classList.toggle('show'); }
+const FAH_ANS={
+  buy:'<b>ซื้อ REC ง่ายๆ 4 ขั้นค่ะ 💰</b><br>1) สมัครด้วยอีเมล (ระบบสร้าง wallet ให้ทันที)<br>2) กด <b>+ ซื้อ REC</b> แล้วใส่จำนวนที่ต้องการ (ราคา 40 บาท/เหรียญ)<br>3) เลือกชำระ <b>PromptPay</b> (สแกน QR) หรือ <b>บัตรเครดิต</b><br>4) จ่ายเสร็จ REC เข้ากระเป๋าอัตโนมัติค่ะ ✅',
+  retire:'<b>Retire REC คือการ "ใช้" เหรียญเพื่อชดเชยพลังงานสะอาดค่ะ ♻️</b><br>เมื่อ retire ระบบจะ burn เหรียญถาวร แล้วออก <b>ใบ Certificate</b> ให้ ใช้ยืนยัน ESG / Scope 2 ขององค์กรได้<br><br>วิธีทำ: เข้าหน้ากระเป๋า → กด <b>♻️ Retire</b> → ใส่จำนวน + ชื่อผู้รับใบรับรอง → ยืนยัน → ดาวน์โหลด certificate ได้เลยค่ะ',
+  pay:'<b>ช่องทางชำระเงิน 💳</b><br>• <b>PromptPay</b> (สแกน QR) — ขั้นต่ำ <b>1 เหรียญ</b><br>• <b>บัตรเครดิต/เดบิต</b> (ผ่อนได้) — ขั้นต่ำ <b>10 เหรียญ</b><br><br>ราคาคงที่ <b>40 บาท/REC</b> ช่วงเปิดตัวค่ะ จ่ายเสร็จเหรียญเข้ากระเป๋าทันที',
+  what:'<b>REC = Renewable Energy Certificate (ใบรับรองพลังงานสะอาด) บนบล็อกเชนค่ะ 🪙</b><br>1 REC แทนพลังงานหมุนเวียนที่ผ่านการรับรอง ซื้อไว้เพื่อ:<br>• สนับสนุนพลังงานสะอาด<br>• retire รับ certificate ไปใช้ลด carbon footprint / ESG ขององค์กร<br><br>เป็น Utility Token กลุ่ม 1 — ซื้อง่าย ไม่ต้องยืนยันตัวตนค่ะ',
+  wallet:'<b>กระเป๋าของคุณสร้างอัตโนมัติตอนสมัครค่ะ 👛</b><br>ผูกกับอีเมลที่ใช้สมัคร — REC ที่ซื้อจะเก็บไว้ในนี้ (custodial ฟ้าดูแลให้)<br>หรือจะ <b>เชื่อม MetaMask</b> เพื่อถือเหรียญเองก็ได้ค่ะ<br><br>⚠️ เก็บอีเมล + รหัสผ่านไว้เป็นความลับนะคะ เพราะใช้เข้าถึง REC ในกระเป๋า',
+};
+const FAH_Q={buy:'ซื้อ REC ยังไง?',retire:'Retire REC ทำยังไง?',pay:'ชำระเงิน & ขั้นต่ำ',what:'REC คืออะไร?',wallet:'Wallet อยู่ไหน?'};
+function fahAns(key){
+  const body=document.getElementById('fahBody');
+  // user bubble
+  const u=document.createElement('div'); u.className='fah-msg user';
+  u.innerHTML='<div class="bubble">'+FAH_Q[key]+'</div>';
+  body.appendChild(u);
+  // bot bubble
+  const b=document.createElement('div'); b.className='fah-msg bot';
+  b.innerHTML='<div class="fah-mini">ฟ้า</div><div class="bubble">'+FAH_ANS[key]+'</div>';
+  body.appendChild(b);
+  body.scrollTop=body.scrollHeight;
 }
