@@ -62,8 +62,9 @@ app.get('/api/wallet',auth,(req,res)=>{
 app.post('/api/orders',auth,async(req,res)=>{
   const {qty,method}=req.body||{};
   const q=Math.floor(Number(qty));
-  if(!q||q<=0) return res.status(400).json({error:'qty must be > 0'});
+  if(!q||q<1) return res.status(400).json({error:'ขั้นต่ำ 1 เหรียญ'});
   if(!['promptpay','card'].includes(method)) return res.status(400).json({error:'method must be promptpay|card'});
+  if(method==='card' && q<10) return res.status(400).json({error:'ชำระด้วยบัตรเครดิตขั้นต่ำ 10 เหรียญ'});
   const d=db(); const c=d.config; const available=c.treasuryRec-c.recSold;
   if(q>available) return res.status(409).json({error:`insufficient inventory (available ${available})`});
   const amountTHB=q*c.priceTHB; const id=nextId('order'); const ref='ORD-'+String(id).padStart(6,'0');
