@@ -12,6 +12,24 @@ const { renderCertificate } = require('./src/certificate');
 const app = express();
 app.use(cors());
 app.use(express.json());
+app.set('trust proxy', true); // Railway/proxy → req.ip = real client IP
+
+// เก็บหลักฐานยืนยันธุรกรรม: IP, อุปกรณ์, browser, OS, ภาษา, เวลา
+function captureMeta(req){
+  const ua = req.headers['user-agent'] || '';
+  const ip = (req.headers['x-forwarded-for']||'').split(',')[0].trim() || req.ip || req.connection?.remoteAddress || '';
+  // parse แบบเบาๆ (ไม่ใช้ lib)
+  let os='Unknown', browser='Unknown', device='Desktop';
+  if(/Windows NT 10/.test(ua))os='Windows 10/11'; else if(/Windows NT/.test(ua))os='Windows';
+  else if(/iPhone|iPad|iPod/.test(ua)){os='iOS';device='Mobile';} else if(/Android/.test(ua)){os='Android';device='Mobile';}
+  else if(/Mac OS X/.test(ua))os='macOS'; else if(/Linux/.test(ua))os='Linux';
+  if(/Edg\//.test(ua))browser='Edge'; else if(/Chrome\//.test(ua))browser='Chrome';
+  else if(/Firefox\//.test(ua))browser='Firefox'; else if(/Safari\//.test(ua)&&!/Chrome/.test(ua))browser='Safari';
+  if(/Mobile/.test(ua))device='Mobile';
+  return { ip, ua, os, browser, device,
+    lang: req.headers['accept-language']||'',
+    at: new Date().toISOString() };
+}
 app.use(express.static(path.join(__dirname, 'public')));
 
 const JWT_SECRET = process.env.JWT_SECRET || 'dev-secret';
@@ -37,7 +55,7 @@ app.post('/api/auth/signup',(req,res)=>{
   if(!email||!password) return res.status(400).json({error:'email & password required'});
   const d=db();
   if(d.users.find(u=>u.email.toLowerCase()===email.toLowerCase())) return res.status(409).json({error:'email already registered'});
-  const user={ id:nextId('user'), email, passwordHash:bcrypt.hashSync(password,10), walletType:'custodial', address:null, recBalance:0, createdAt:new Date().toISOString() };
+  const user={ id:nextId('user'), email, passwordHash:bcrypt.hashSync(password,10), walletType:'custodial', address:null, recBalance:0, createdAt:new Date().toISOString(), signupMeta:captureMeta(req) };
   d.users.push(user); save();
   res.json({ token:sign(user), user:publicUser(user) });
 });
@@ -70,7 +88,7 @@ app.post('/api/orders',auth,async(req,res)=>{
   const amountTHB=q*c.priceTHB; const id=nextId('order'); const ref='ORD-'+String(id).padStart(6,'0');
   const u=findUser(req.user.uid);
   let pay; try{ pay=await payment.createPayment({method,amountTHB,orderRef:ref,orderId:id,email:u.email,productName:q+' REC'}); }catch(e){ return res.status(500).json({error:e.message}); }
-  const order={ id,ref,userId:u.id,qty:q,priceTHB:c.priceTHB,amountTHB,method,provider:pay.provider,status:'pending',amlReview:amountTHB>=AML_THRESHOLD,promptpay:pay.promptpay||null,psRef:pay.referenceNo||null,psOrderNo:pay.orderNo||null,createdAt:new Date().toISOString() };
+  const order={ id,ref,userId:u.id,qty:q,priceTHB:c.priceTHB,amountTHB,method,provider:pay.provider,status:'pending',amlReview:amountTHB>=AML_THRESHOLD,promptpay:pay.promptpay||null,psRef:pay.referenceNo||null,psOrderNo:pay.orderNo||null,createdAt:new Date().toISOString(), meta:captureMeta(req) };
   d.orders.push(order); save();
   res.json({ order, payment:pay });
 });
@@ -93,7 +111,7 @@ app.post('/api/retire',auth,async(req,res)=>{
   if(q>u.recBalance) return res.status(409).json({error:`insufficient balance (${u.recBalance})`});
   const d=db(); u.recBalance-=q; d.config.recRetired+=q;
   const seq=nextId('cert');
-  const cert={ id:'REC-RT-'+String(seq).padStart(6,'0'), userId:u.id, amount:q, beneficiary:beneficiary||u.email, purpose:purpose||'Voluntary REC retirement', walletRef:u.walletType==='metamask'?u.address:u.email, date:new Date().toLocaleDateString('th-TH',{day:'numeric',month:'short',year:'numeric'}), createdAt:new Date().toISOString() };
+  const cert={ id:'REC-RT-'+String(seq).padStart(6,'0'), userId:u.id, amount:q, beneficiary:beneficiary||u.email, purpose:purpose||'Voluntary REC retirement', walletRef:u.walletType==='metamask'?u.address:u.email, date:new Date().toLocaleDateString('th-TH',{day:'numeric',month:'short',year:'numeric'}), createdAt:new Date().toISOString(), meta:captureMeta(req) };
   d.certificates.push(cert); await save();
   res.json({ certificate:cert, user:publicUser(u) });
 });
@@ -108,7 +126,7 @@ app.get('/api/admin/overview',adminOnly,(req,res)=>{
   res.json({ config:d.config, counts:{users:d.users.length,orders:d.orders.length,certificates:d.certificates.length},
     revenueTHB:d.orders.filter(o=>o.status==='paid').reduce((s,o)=>s+o.amountTHB,0),
     amlFlags:d.orders.filter(o=>o.amlReview).map(o=>({ref:o.ref,amountTHB:o.amountTHB,status:o.status})),
-    orders:d.orders.slice(-50).reverse(), certificates:d.certificates.slice(-50).reverse(), users:d.users.map(publicUser) });
+    orders:d.orders.slice(-50).reverse().map(o=>Object.assign({email:(d.users.find(x=>x.id===o.userId)||{}).email||''},o)), certificates:d.certificates.slice(-50).reverse(), users:d.users.map(publicUser) });
 });
 app.post('/api/admin/price',adminOnly,(req,res)=>{
   const p=Number(req.body&&req.body.priceTHB);
@@ -159,7 +177,9 @@ app.get('/api/admin/export/users',adminOnly,(req,res)=>{
   sendCSV(res,'rec-users.csv',toCSV(rows,[
     {label:'id',key:'id'},{label:'email',key:'email'},
     {label:'walletType',key:'walletType'},{label:'metamaskAddress',get:u=>u.address||''},
-    {label:'recBalance',key:'recBalance'},{label:'createdAt',key:'createdAt'}
+    {label:'recBalance',key:'recBalance'},{label:'createdAt',key:'createdAt'},
+    {label:'signupIP',get:u=>u.signupMeta?.ip||''},{label:'signupDevice',get:u=>u.signupMeta?.device||''},
+    {label:'signupOS',get:u=>u.signupMeta?.os||''},{label:'signupBrowser',get:u=>u.signupMeta?.browser||''}
   ]));
 });
 app.get('/api/admin/export/orders',adminOnly,(req,res)=>{
@@ -168,7 +188,10 @@ app.get('/api/admin/export/orders',adminOnly,(req,res)=>{
     {label:'email',get:o=>{const u=db().users.find(x=>x.id===o.userId);return u?u.email:'';}},
     {label:'qty',key:'qty'},{label:'priceTHB',key:'priceTHB'},{label:'amountTHB',key:'amountTHB'},
     {label:'method',key:'method'},{label:'status',key:'status'},{label:'amlReview',key:'amlReview'},
-    {label:'createdAt',key:'createdAt'},{label:'paidAt',get:o=>o.paidAt||''}
+    {label:'createdAt',key:'createdAt'},{label:'paidAt',get:o=>o.paidAt||''},
+    {label:'ip',get:o=>o.meta?.ip||''},{label:'device',get:o=>o.meta?.device||''},
+    {label:'os',get:o=>o.meta?.os||''},{label:'browser',get:o=>o.meta?.browser||''},
+    {label:'lang',get:o=>o.meta?.lang||''},{label:'userAgent',get:o=>o.meta?.ua||''}
   ]));
 });
 app.get('/api/admin/export/certificates',adminOnly,(req,res)=>{
