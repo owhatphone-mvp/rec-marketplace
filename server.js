@@ -115,6 +115,14 @@ app.post('/api/admin/price',adminOnly,(req,res)=>{
   if(!p||p<=0) return res.status(400).json({error:'priceTHB must be > 0'});
   db().config.priceTHB=p; save(); res.json({config:db().config});
 });
+app.post('/api/admin/reset-password',adminOnly,async(req,res)=>{
+  const {email,newPassword}=req.body||{};
+  if(!email||!newPassword||newPassword.length<6) return res.status(400).json({error:'email + newPassword(>=6) required'});
+  const u=db().users.find(x=>x.email.toLowerCase()===String(email).toLowerCase());
+  if(!u) return res.status(404).json({error:'user not found'});
+  u.passwordHash=bcrypt.hashSync(newPassword,10); await save();
+  res.json({ok:true,email:u.email});
+});
 
 // ---- PaySolutions: poll inquiry to confirm PromptPay payment ----
 async function creditOrderPaid(order){
