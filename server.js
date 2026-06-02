@@ -134,7 +134,7 @@ app.post('/api/orders/:id/poll', auth, async (req,res)=>{
   res.json({ paid:false, status:r.status });
 });
 
-app.get('/api/health',(req,res)=>res.json({ok:true,paymentMode:payment.MODE}));
+app.get('/api/health',(req,res)=>res.json({ok:true,paymentMode:payment.MODE,db:dbmod.USE_PG?'postgres':'json'}));
 
 const PORT=process.env.PORT||3000;
 dbmod.init().then(()=>{
