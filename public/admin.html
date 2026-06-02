@@ -29,10 +29,22 @@ async function load(){
      <div class="kpi"><div class="v">${d.counts.users}</div><div class="l">ผู้ใช้</div></div>
      <div class="kpi"><div class="v">฿${c.priceTHB}</div><div class="l">ราคา/REC</div></div></div></div>
    <div class="card"><b>ปรับราคา</b><br><input id="np" type="number" value="${c.priceTHB}" style="width:120px"> <button onclick="setPrice()">บันทึก</button></div>
+   <div class="card"><b>📥 Export ข้อมูล (CSV — เปิด Excel ได้)</b><div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">
+     <button onclick="dl('users')">ลูกค้า + Wallet</button>
+     <button onclick="dl('orders')">รายการสั่งซื้อ</button>
+     <button onclick="dl('certificates')">ใบ Certificate</button></div></div>
    <div class="card"><b>AML flags (ธุรกรรมใหญ่)</b>${d.amlFlags.length?'':'<p style="color:#6b7785;font-size:13px">ไม่มี</p>'}${d.amlFlags.map(f=>`<div class="flag">${f.ref} · ฿${f.amountTHB.toLocaleString()} · ${f.status}</div>`).join('')}</div>
+   <div class="card"><b>ลูกค้า + Wallet (${d.users.length})</b><table><tr><th>อีเมล</th><th>Wallet</th><th>REC</th><th>MetaMask</th></tr>${d.users.map(u=>`<tr><td>${u.email}</td><td>${u.walletType}</td><td>${(u.recBalance||0).toLocaleString()}</td><td style="font-size:11px;color:#6b7785">${u.address||'-'}</td></tr>`).join('')}</table></div>
    <div class="card"><b>คำสั่งซื้อล่าสุด</b><table><tr><th>Ref</th><th>REC</th><th>฿</th><th>วิธี</th><th>สถานะ</th></tr>${d.orders.map(o=>`<tr><td>${o.ref}</td><td>${o.qty}</td><td>${o.amountTHB.toLocaleString()}</td><td>${o.method}</td><td>${o.status}${o.amlReview?' <span class="flag">⚑</span>':''}</td></tr>`).join('')}</table></div>
    <div class="card"><b>Certificates</b><table><tr><th>ID</th><th>REC</th><th>ผู้รับ</th><th>วันที่</th></tr>${d.certificates.map(c=>`<tr><td><a href="/api/certificates/${c.id}" target="_blank">${c.id}</a></td><td>${c.amount}</td><td>${c.beneficiary}</td><td>${c.date}</td></tr>`).join('')}</table></div>`;
 }
 async function setPrice(){ const key=document.getElementById('key').value; const priceTHB=Number(document.getElementById('np').value);
   await fetch('/api/admin/price',{method:'POST',headers:{'Content-Type':'application/json','x-admin-key':key},body:JSON.stringify({priceTHB})}); load(); }
+async function dl(kind){
+  const key=document.getElementById('key').value;
+  const r=await fetch('/api/admin/export/'+kind,{headers:{'x-admin-key':key}});
+  if(!r.ok){alert('export ไม่ได้ (key ผิด?)');return;}
+  const blob=await r.blob(); const url=URL.createObjectURL(blob);
+  const a=document.createElement('a'); a.href=url; a.download='rec-'+kind+'.csv'; a.click(); URL.revokeObjectURL(url);
+}
 </script></body></html>
