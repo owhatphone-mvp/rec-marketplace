@@ -143,6 +143,43 @@ app.post('/api/orders/:id/poll', auth, async (req,res)=>{
   res.json({ paid:false, status:r.status });
 });
 
+function toCSV(rows, cols){
+  const esc=v=>{ v=(v===null||v===undefined)?'':String(v); return /[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v; };
+  const head=cols.map(c=>c.label).join(',');
+  const body=rows.map(r=>cols.map(c=>esc(typeof c.get==='function'?c.get(r):r[c.key])).join(',')).join('\n');
+  return '\uFEFF'+head+'\n'+body; // BOM = Excel อ่านภาษาไทยถูก
+}
+function sendCSV(res,name,csv){
+  res.set('Content-Type','text/csv; charset=utf-8');
+  res.set('Content-Disposition',`attachment; filename="${name}"`);
+  res.send(csv);
+}
+app.get('/api/admin/export/users',adminOnly,(req,res)=>{
+  const rows=db().users;
+  sendCSV(res,'rec-users.csv',toCSV(rows,[
+    {label:'id',key:'id'},{label:'email',key:'email'},
+    {label:'walletType',key:'walletType'},{label:'metamaskAddress',get:u=>u.address||''},
+    {label:'recBalance',key:'recBalance'},{label:'createdAt',key:'createdAt'}
+  ]));
+});
+app.get('/api/admin/export/orders',adminOnly,(req,res)=>{
+  sendCSV(res,'rec-orders.csv',toCSV(db().orders,[
+    {label:'ref',key:'ref'},{label:'userId',key:'userId'},
+    {label:'email',get:o=>{const u=db().users.find(x=>x.id===o.userId);return u?u.email:'';}},
+    {label:'qty',key:'qty'},{label:'priceTHB',key:'priceTHB'},{label:'amountTHB',key:'amountTHB'},
+    {label:'method',key:'method'},{label:'status',key:'status'},{label:'amlReview',key:'amlReview'},
+    {label:'createdAt',key:'createdAt'},{label:'paidAt',get:o=>o.paidAt||''}
+  ]));
+});
+app.get('/api/admin/export/certificates',adminOnly,(req,res)=>{
+  sendCSV(res,'rec-certificates.csv',toCSV(db().certificates,[
+    {label:'id',key:'id'},{label:'userId',key:'userId'},
+    {label:'email',get:c=>{const u=db().users.find(x=>x.id===c.userId);return u?u.email:'';}},
+    {label:'amount',key:'amount'},{label:'beneficiary',key:'beneficiary'},{label:'purpose',key:'purpose'},
+    {label:'walletRef',key:'walletRef'},{label:'date',key:'date'},{label:'createdAt',key:'createdAt'}
+  ]));
+});
+
 app.get('/api/health',(req,res)=>res.json({ok:true,paymentMode:payment.MODE,db:dbmod.USE_PG?'postgres':'json'}));
 
 const PORT=process.env.PORT||3000;
