@@ -138,10 +138,20 @@ const _pp=new URLSearchParams(location.search); if(_pp.get('paid')) setTimeout((
 })();
 loadMarket().then(()=>{ if(token) show('home'); else show('auth'); });
 
-// ===== ฟ้า AI panel =====
-function fahToggle(){ document.getElementById('fahPanel').classList.toggle('show'); }
+// ===== ฟ้า AI panel (embed iframe — ตอบในกรอบ ไม่เด้งออก) =====
+let fahLoaded=false;
+function fahToggle(){
+  const p=document.getElementById('fahPanel');
+  p.classList.toggle('show');
+  if(p.classList.contains('show') && !fahLoaded){ // โหลดฟ้าครั้งแรกที่เปิด
+    document.getElementById('fahFrame').src='https://fah.rectokenasean.com/';
+    fahLoaded=true;
+  }
+}
 function fahAsk(q){
-  // ส่งคำถามไปหน้าแชตฟ้าเต็ม (เปิดแท็บใหม่พร้อม prefill ถ้าฟ้ารองรับ ?q=)
-  const url='https://fah.rectokenasean.com/?q='+encodeURIComponent(q);
-  window.open(url,'_blank','noopener,noreferrer');
+  // โหลดฟ้าในกรอบพร้อมส่งคำถาม (prefill ผ่าน ?q= ถ้าฟ้ารองรับ)
+  const f=document.getElementById('fahFrame');
+  f.src='https://fah.rectokenasean.com/?q='+encodeURIComponent(q);
+  fahLoaded=true;
+  const quick=document.getElementById('fahQuick'); if(quick) quick.style.display='none'; // ซ่อนปุ่มไกด์ ให้กรอบฟ้าเต็ม
 }
