@@ -75,11 +75,16 @@ async function inquire({ referenceNo, orderNo }) {
     })
   });
   const text = await res.text();
-  if (!text) return { paid: false, status: 'PENDING', raw: null }; // no body = not paid yet
+  if (!text || text.trim()==='[]') return { paid: false, status: 'PENDING', raw: null }; // no record yet = not paid
   let data; try { data = JSON.parse(text); } catch { return { paid: false, status: 'UNKNOWN', raw: text }; }
-  const status = (data.Status || '').toUpperCase();
-  const paid = status === 'CP' || (data.StatusName || '').toUpperCase() === 'COMPLETE';
-  return { paid, status: data.StatusName || status, raw: data };
+  // Inquiry returns an ARRAY of order records; take the first
+  const rec = Array.isArray(data) ? data[0] : data;
+  if (!rec) return { paid: false, status: 'PENDING', raw: data };
+  const status = String(rec.Status || '').toUpperCase();
+  const statusName = String(rec.StatusName || '').toUpperCase();
+  // Paid signals seen from PaySolutions: Status "Y" or "CP", StatusName "PAID"/"COMPLETE"
+  const paid = ['Y','CP'].includes(status) || ['PAID','COMPLETE'].includes(statusName);
+  return { paid, status: rec.StatusName || status, raw: rec };
 }
 
 // ---- Credit card / e-Payment hosted redirect (Simple payment) ----
