@@ -74,6 +74,13 @@ async function doBuy(){
   $('pay-btn').disabled=true; $('pay-btn').innerHTML='<span class="loader"></span> กำลังประมวลผล...';
   try{
     const {order,payment}=await api('/api/orders',{method:'POST',body:JSON.stringify({qty:q,method:payMethod})});
+    if(payment && payment.status==='redirect' && payment.checkout){
+      // remember which order to resume polling when user returns from PaySolutions
+      try{ localStorage.setItem('pending_order', JSON.stringify({id:order.id,qty:q})); }catch(e){}
+      const f=document.createElement('form'); f.method=payment.checkout.method||'POST'; f.action=payment.checkout.action;
+      Object.entries(payment.checkout.fields||{}).forEach(([k,v])=>{ const i=document.createElement('input'); i.type='hidden'; i.name=k; i.value=v; f.appendChild(i); });
+      document.body.appendChild(f); f.submit(); return; // leaves page -> PaySolutions hosted card page
+    }
     if(payment && payment.status==='awaiting_payment' && payment.qrImage){
       showQR(payment.qrImage);
       $('pay-btn').textContent='รอสแกนจ่าย...';
@@ -100,4 +107,10 @@ async function connectMetaMask(){
   }catch(e){ toast(e.message); }
 }
 const _pp=new URLSearchParams(location.search); if(_pp.get('paid')) setTimeout(()=>toast('ชำระเงินสำเร็จ — REC เข้ากระเป๋าแล้ว'),600); if(_pp.get('pending')) setTimeout(()=>toast('กำลังตรวจสอบการชำระเงิน...'),600);
+(function resumePending(){
+  try{ const p=JSON.parse(localStorage.getItem('pending_order')||'null');
+    if(p&&token){ localStorage.removeItem('pending_order');
+      api('/api/orders/'+p.id+'/poll',{method:'POST'}).then(r=>{ if(r.paid) toast('ชำระเงินสำเร็จ +'+p.qty+' REC'); }).catch(()=>{}); }
+  }catch(e){}
+})();
 loadMarket().then(()=>{ if(token) show('home'); else show('auth'); });
