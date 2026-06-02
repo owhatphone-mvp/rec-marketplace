@@ -61,6 +61,8 @@ async function loadWallet(){
   try{ const w=await api('/api/wallet');
     $('w-id').textContent=w.user.walletType==='metamask'?w.user.address:w.user.email;
     $('w-rec').textContent=w.user.recBalance; $('w-thb').textContent=fmt(w.user.recBalance*market.priceTHB); $('w-type').textContent=w.user.walletType;
+    if($('home-price')) $('home-price').textContent=fmt(market.priceTHB);
+    if($('home-note')&&market.note) $('home-note').textContent=market.note;
     const list=$('cert-list');
     if(!w.certificates.length){ list.innerHTML='<p class="sub">ยังไม่มี certificate — กด Retire เพื่อแลกเป็นใบรับรอง</p>'; }
     else{ list.innerHTML=w.certificates.slice().reverse().map(c=>`<div class="certrow"><div class="ic">♻️</div><div style="flex:1"><b>${c.amount} REC retired</b><br><a class="cl" href="/api/certificates/${c.id}" target="_blank">${c.id} · ดูใบรับรอง ↗</a></div></div>`).join(''); }
