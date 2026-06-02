@@ -29,10 +29,28 @@ async function loadMarket(){
     $('hero-note').textContent=market.note||''; $('buy-price').textContent=market.priceTHB;
   }catch(e){}
 }
-function authTab(m){ authMode=m; $('tab-signup').classList.toggle('on',m==='signup'); $('tab-login').classList.toggle('on',m==='login'); $('au-btn').textContent=m==='signup'?'สมัครและสร้าง Wallet':'เข้าสู่ระบบ'; }
+function authTab(m){ authMode=m; $('tab-signup').classList.toggle('on',m==='signup'); $('tab-login').classList.toggle('on',m==='login'); $('au-btn').textContent=m==='signup'?'สมัครและสร้าง Wallet':'เข้าสู่ระบบ';
+  const w=$('pw2-wrap'); if(w) w.style.display = m==='signup' ? 'block':'none';
+  checkPwMatch();
+}
+function checkPwMatch(){
+  const msg=$('pw-msg'); if(!msg) return;
+  if(authMode!=='signup'){ msg.textContent=''; $('au-btn').disabled=false; return; }
+  const p=$('au-pass').value, p2=($('au-pass2')||{}).value||'';
+  if(!p){ msg.textContent=''; $('au-btn').disabled=false; return; }
+  if(p.length<6){ msg.textContent='รหัสผ่านอย่างน้อย 6 ตัวอักษร'; msg.style.color='var(--amber,#b45309)'; $('au-btn').disabled=true; return; }
+  if(!p2){ msg.textContent='กรุณาพิมพ์รหัสผ่านอีกครั้งเพื่อยืนยัน'; msg.style.color='var(--muted)'; $('au-btn').disabled=true; return; }
+  if(p!==p2){ msg.textContent='✕ รหัสผ่านไม่ตรงกัน'; msg.style.color='var(--red,#dc2626)'; $('au-btn').disabled=true; return; }
+  msg.textContent='✓ รหัสผ่านตรงกัน'; msg.style.color='var(--green-d,#0f7d39)'; $('au-btn').disabled=false;
+}
 async function doAuth(){
   const email=$('au-email').value.trim(), password=$('au-pass').value;
   if(!email||!password) return toast('กรอกอีเมลและรหัสผ่าน');
+  if(authMode==='signup'){
+    if(password.length<6) return toast('รหัสผ่านอย่างน้อย 6 ตัวอักษร');
+    const p2=($('au-pass2')||{}).value||'';
+    if(password!==p2) return toast('รหัสผ่านยืนยันไม่ตรงกัน');
+  }
   $('au-btn').disabled=true;
   try{ const res=await api(authMode==='signup'?'/api/auth/signup':'/api/auth/login',{method:'POST',body:JSON.stringify({email,password})});
     token=res.token; localStorage.setItem('rec_token',token); show('home');
