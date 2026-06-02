@@ -12,7 +12,7 @@ async function api(path, opts={}){
   const r=await fetch(API+path,opts); const data=await r.json().catch(()=>({}));
   if(!r.ok) throw new Error(data.error||('error '+r.status)); return data;
 }
-function show(view){
+function show(view){ if(view!=='pay'){ try{stopPoll();}catch(e){} }
   ['auth','home','buy','pay','retire'].forEach(v=>$('view-'+v).classList.add('hidden'));
   $('view-'+view).classList.remove('hidden');
   $('logoutBtn').classList.toggle('hidden',view==='auth');
@@ -51,22 +51,34 @@ const qty=()=>Math.max(0,Math.floor(Number($('buy-qty').value)||0));
 function setQ(v){ $('buy-qty').value=v; buyCalc(); }
 function buyCalc(){ $('buy-total').textContent=fmt(qty()*market.priceTHB); }
 function payTab(m){ payMethod=m; $('pm-pp').classList.toggle('on',m==='promptpay'); $('pm-cc').classList.toggle('on',m==='card'); $('pp-box').classList.toggle('hidden',m!=='promptpay'); $('cc-box').classList.toggle('hidden',m!=='card'); }
-function redirectToPSP(checkout){
-  // build + auto-submit a POST form to the PaySolutions hosted page
-  const f=document.createElement('form');
-  f.method=checkout.method||'POST'; f.action=checkout.action;
-  Object.entries(checkout.fields||{}).forEach(([k,v])=>{
-    const i=document.createElement('input'); i.type='hidden'; i.name=k; i.value=v; f.appendChild(i);
-  });
-  document.body.appendChild(f); f.submit();
+let pollTimer=null;
+function stopPoll(){ if(pollTimer){ clearInterval(pollTimer); pollTimer=null; } }
+function showQR(dataUrl){
+  const box=$('pp-box');
+  box.innerHTML = '<img src="'+dataUrl+'" alt="PromptPay QR" style="width:200px;height:200px;border:6px solid #fff;border-radius:10px;box-shadow:0 0 0 1px var(--line)">'
+    + '<div style="font-size:12px;color:var(--muted);margin-top:8px">สแกนด้วยแอปธนาคารเพื่อจ่าย · กำลังรอการชำระ <span class="loader"></span></div>';
+  box.classList.remove('hidden');
+  $('cc-box').classList.add('hidden');
+}
+function pollOrder(orderId, qtyN){
+  stopPoll();
+  pollTimer=setInterval(async ()=>{
+    try{
+      const r=await api('/api/orders/'+orderId+'/poll',{method:'POST'});
+      if(r.paid){ stopPoll(); toast('ชำระเงินสำเร็จ +'+qtyN+' REC'); show('home'); }
+    }catch(e){ /* keep polling */ }
+  }, 4000);
 }
 async function doBuy(){
   const q=qty(); if(q<=0) return toast('ใส่จำนวน REC');
   $('pay-btn').disabled=true; $('pay-btn').innerHTML='<span class="loader"></span> กำลังประมวลผล...';
   try{
     const {order,payment}=await api('/api/orders',{method:'POST',body:JSON.stringify({qty:q,method:payMethod})});
-    if(payment && payment.status==='redirect' && payment.checkout){
-      redirectToPSP(payment.checkout); return; // leaves page -> PaySolutions
+    if(payment && payment.status==='awaiting_payment' && payment.qrImage){
+      showQR(payment.qrImage);
+      $('pay-btn').textContent='รอสแกนจ่าย...';
+      pollOrder(order.id, q);
+      return; // stays on page, polls until paid
     }
     // mock / instant providers
     await api('/api/orders/'+order.id+'/confirm',{method:'POST'}); toast('ซื้อสำเร็จ +'+q+' REC'); show('home');
