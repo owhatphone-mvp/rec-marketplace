@@ -48,12 +48,34 @@
   .loader{width:16px;height:16px;border:2.5px solid #c9e9d4;border-top-color:#fff;border-radius:50%;display:inline-block;animation:spin .7s linear infinite;vertical-align:-3px}
   @keyframes spin{to{transform:rotate(360deg)}}
 
-  #fah-fab{position:fixed;right:18px;bottom:20px;z-index:60;display:flex;align-items:center;gap:10px;text-decoration:none}
-  #fah-fab .fah-icon{width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,#13863e,#1fb15b);color:#fff;display:flex;align-items:center;justify-content:center;font-size:26px;box-shadow:0 6px 18px rgba(16,24,40,.28);transition:transform .15s}
-  #fah-fab:active .fah-icon{transform:scale(.92)}
-  #fah-fab .fah-bubble{background:#fff;border:1px solid var(--line);color:var(--ink);font-size:12.5px;font-weight:600;padding:9px 13px;border-radius:14px;box-shadow:0 4px 14px rgba(16,24,40,.14);white-space:nowrap;animation:fahpop 3s ease-in-out infinite}
-  @keyframes fahpop{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
-  @media(max-width:430px){#fah-fab .fah-bubble{display:none}}
+  .fah-btn{position:fixed;bottom:22px;right:22px;z-index:80;height:60px;padding:0 22px 0 16px;border-radius:34px;background:linear-gradient(135deg,#0ea5e9,#22c55e);color:#fff;border:none;cursor:pointer;font-family:inherit;font-weight:800;font-size:14px;display:flex;align-items:center;gap:11px;box-shadow:0 16px 40px -8px rgba(34,197,94,.5);animation:fah-float 4s ease-in-out infinite}
+  .fah-btn:hover{transform:translateY(-3px) scale(1.04)}
+  .fah-btn .av{width:42px;height:42px;border-radius:50%;background:#fff;display:grid;place-items:center;color:#0e7490;font-weight:900;font-size:16px;position:relative}
+  .fah-btn .av::after{content:"";position:absolute;bottom:1px;right:1px;width:11px;height:11px;border-radius:50%;background:#22c55e;border:2.5px solid #fff}
+  .fah-btn .lb{display:flex;flex-direction:column;align-items:flex-start;line-height:1.15}
+  .fah-btn .lb small{font-size:10.5px;opacity:.9;font-weight:500}
+  @keyframes fah-float{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+  .fah-panel{position:fixed;bottom:92px;right:22px;z-index:79;width:370px;max-width:calc(100vw - 28px);height:540px;max-height:calc(100vh - 130px);background:#fff;border:1px solid var(--line);border-radius:22px;box-shadow:0 40px 80px -10px rgba(0,0,0,.2);display:flex;flex-direction:column;overflow:hidden;opacity:0;transform:translateY(20px) scale(.97);pointer-events:none;transition:opacity .25s,transform .25s}
+  .fah-panel.show{opacity:1;transform:none;pointer-events:auto}
+  .fah-head{background:linear-gradient(135deg,#0ea5e9,#22c55e);padding:18px 20px;display:flex;align-items:center;gap:13px;color:#fff;position:relative}
+  .fah-head .av{width:44px;height:44px;border-radius:50%;background:#fff;display:grid;place-items:center;font-weight:900;color:#0e7490;font-size:17px}
+  .fah-head h4{font-size:16px;font-weight:800;margin:0}
+  .fah-head .sub{font-size:11px;opacity:.95;display:flex;align-items:center;gap:6px;margin-top:2px}
+  .fah-head .sub::before{content:"";width:7px;height:7px;border-radius:50%;background:#bbf7d0}
+  .fah-close{position:absolute;top:13px;right:13px;width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,.2);border:none;color:#fff;cursor:pointer;font-size:16px}
+  .fah-body{flex:1;overflow-y:auto;padding:18px;display:flex;flex-direction:column;gap:12px;background:var(--bg)}
+  .fah-msg{display:flex;gap:9px;max-width:92%}
+  .fah-msg .bubble{padding:11px 15px;border-radius:16px;font-size:13.5px;line-height:1.55}
+  .fah-msg.bot{align-self:flex-start}
+  .fah-msg.bot .bubble{background:#fff;border:1px solid var(--line);border-top-left-radius:4px;color:var(--ink)}
+  .fah-mini{width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,#0ea5e9,#22c55e);display:grid;place-items:center;color:#fff;font-weight:900;font-size:11px;flex-shrink:0}
+  .fah-quick{display:flex;flex-direction:column;gap:7px;padding:0 18px 14px;background:var(--bg)}
+  .fah-quick .qlabel{font-size:11px;color:var(--muted);margin:2px 0 1px}
+  .fah-quick button{font-family:inherit;font-size:12.5px;padding:10px 14px;border-radius:12px;background:#fff;border:1px solid var(--line);color:var(--ink);cursor:pointer;text-align:left;transition:all .15s}
+  .fah-quick button:hover{background:var(--green-l);border-color:var(--green);color:var(--green-d)}
+  .fah-foot{padding:12px 16px;border-top:1px solid var(--line);background:#fff;text-align:center}
+  .fah-foot a{display:block;background:linear-gradient(135deg,#0ea5e9,#22c55e);color:#fff;text-decoration:none;font-weight:700;font-size:13.5px;padding:12px;border-radius:12px}
+  @media(max-width:430px){.fah-btn .lb{display:none}.fah-btn{padding:0;width:60px;justify-content:center}}
 </style>
 </head>
 <body>
@@ -122,11 +144,30 @@
       <button class="btn btn-ghost" style="margin-top:8px" onclick="show('home')">กลับ</button></div>
   </div>
 </div>
-<!-- Floating Fah AI assistant -->
-<a id="fah-fab" href="https://fah.rectokenasean.com" target="_blank" rel="noopener" aria-label="คุยกับฟ้า AI">
-  <span class="fah-bubble">สวัสดีค่ะ มีอะไรให้ฟ้าช่วยไหม? 💬</span>
-  <span class="fah-icon">⚡</span>
-</a>
+<!-- ฟ้า AI assistant -->
+<button class="fah-btn" id="fahBtn" onclick="fahToggle()" aria-label="คุยกับฟ้า AI ผู้ช่วยซื้อขาย REC">
+  <span class="av">ฟ้า</span>
+  <span class="lb">ถามฟ้า AI<small>ผู้ช่วยซื้อขาย REC</small></span>
+</button>
+<div class="fah-panel" id="fahPanel">
+  <div class="fah-head">
+    <div class="av">ฟ้า</div>
+    <div><h4>ฟ้า AI</h4><div class="sub">ผู้ช่วยเรื่องซื้อขาย &amp; retire REC</div></div>
+    <button class="fah-close" onclick="fahToggle()">✕</button>
+  </div>
+  <div class="fah-body">
+    <div class="fah-msg bot"><div class="fah-mini">ฟ้า</div><div class="bubble">สวัสดีค่ะ 🌱 ฟ้าเป็นผู้ช่วยเรื่อง <b>การซื้อขายและ retire REC</b> ค่ะ<br>มีอะไรให้ช่วยไหมคะ? เลือกหัวข้อด้านล่างได้เลย หรือพิมพ์ถามฟ้าที่หน้าแชตได้เลยค่ะ</div></div>
+  </div>
+  <div class="fah-quick">
+    <div class="qlabel">หัวข้อยอดนิยม — แตะเพื่อถามฟ้า</div>
+    <button onclick="fahAsk('ซื้อ REC ยังไง ต้องทำขั้นตอนไหนบ้าง')">💰 ซื้อ REC ยังไง? ขั้นตอนการซื้อ</button>
+    <button onclick="fahAsk('REC คืออะไร ซื้อแล้วได้อะไร')">🪙 REC คืออะไร ซื้อแล้วได้อะไร</button>
+    <button onclick="fahAsk('retire REC คืออะไร ทำยังไง ได้ certificate ไหม')">♻️ Retire REC คืออะไร ทำยังไง</button>
+    <button onclick="fahAsk('จ่ายเงินด้วยอะไรได้บ้าง PromptPay หรือบัตร')">💳 ช่องทางชำระเงิน (PromptPay/บัตร)</button>
+    <button onclick="fahAsk('ขั้นต่ำซื้อ REC เท่าไหร่ ราคาเท่าไหร่')">📊 ราคา &amp; ขั้นต่ำการซื้อ</button>
+  </div>
+  <div class="fah-foot"><a href="https://fah.rectokenasean.com" target="_blank" rel="noopener">เปิดหน้าแชตเต็มกับฟ้า →</a></div>
+</div>
 <script src="config.js"></script>
 <script src="app.js"></script>
 </body>
