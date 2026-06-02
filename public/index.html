@@ -155,18 +155,13 @@
     <div><h4>ฟ้า AI</h4><div class="sub">ผู้ช่วยเรื่องซื้อขาย &amp; retire REC</div></div>
     <button class="fah-close" onclick="fahToggle()">✕</button>
   </div>
-  <div class="fah-body">
-    <div class="fah-msg bot"><div class="fah-mini">ฟ้า</div><div class="bubble">สวัสดีค่ะ 🌱 ฟ้าเป็นผู้ช่วยเรื่อง <b>การซื้อขายและ retire REC</b> ค่ะ<br>มีอะไรให้ช่วยไหมคะ? เลือกหัวข้อด้านล่างได้เลย หรือพิมพ์ถามฟ้าที่หน้าแชตได้เลยค่ะ</div></div>
-  </div>
-  <div class="fah-quick">
-    <div class="qlabel">หัวข้อยอดนิยม — แตะเพื่อถามฟ้า</div>
+  <div class="fah-quick" id="fahQuick">
+    <div class="qlabel">เลือกหัวข้อ หรือพิมพ์ถามฟ้าในกรอบด้านล่างได้เลย 👇</div>
     <button onclick="fahAsk('ซื้อ REC ยังไง ต้องทำขั้นตอนไหนบ้าง')">💰 ซื้อ REC ยังไง? ขั้นตอนการซื้อ</button>
-    <button onclick="fahAsk('REC คืออะไร ซื้อแล้วได้อะไร')">🪙 REC คืออะไร ซื้อแล้วได้อะไร</button>
     <button onclick="fahAsk('retire REC คืออะไร ทำยังไง ได้ certificate ไหม')">♻️ Retire REC คืออะไร ทำยังไง</button>
-    <button onclick="fahAsk('จ่ายเงินด้วยอะไรได้บ้าง PromptPay หรือบัตร')">💳 ช่องทางชำระเงิน (PromptPay/บัตร)</button>
-    <button onclick="fahAsk('ขั้นต่ำซื้อ REC เท่าไหร่ ราคาเท่าไหร่')">📊 ราคา &amp; ขั้นต่ำการซื้อ</button>
+    <button onclick="fahAsk('จ่ายเงินด้วยอะไรได้บ้าง PromptPay หรือบัตร และขั้นต่ำเท่าไหร่')">💳 ชำระเงิน &amp; ขั้นต่ำการซื้อ</button>
   </div>
-  <div class="fah-foot"><a href="https://fah.rectokenasean.com" target="_blank" rel="noopener">เปิดหน้าแชตเต็มกับฟ้า →</a></div>
+  <iframe id="fahFrame" title="ฟ้า AI" style="flex:1;border:0;width:100%;background:#fff" src="about:blank" loading="lazy"></iframe>
 </div>
 <script src="config.js"></script>
 <script src="app.js"></script>
