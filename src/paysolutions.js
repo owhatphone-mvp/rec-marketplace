@@ -1,64 +1,85 @@
-// PaySolutions integration (Thai PSP — PromptPay + credit card via hosted redirect)
-// Docs: https://www.paysolutions.asia  (Payment Gateway — redirect + postback/return)
-//
-// Flow:
-//   1. createCheckout(order)  -> returns a redirect URL + hidden-form fields
-//      Frontend auto-submits a POST form to PaySolutions hosted page.
-//   2. User pays on PaySolutions (PromptPay QR / card).
-//   3. PaySolutions calls our /api/pay/paysolutions/postback (server-to-server)
-//      and redirects the user back to /api/pay/paysolutions/return.
-//   4. We verify the result + mark the order paid -> credit REC.
+// PaySolutions (Payso) integration — REAL API per https://api-docs.payso.co
+//   PromptPay API:  POST /tep/api/v2/promptpaynew  -> returns QR base64 image
+//   Inquiry API:    POST /order/orderdetailpost    -> check payment status (Status "CP"=complete)
 //
 // Required env (set in Railway Variables — NEVER commit):
-//   PAYSOLUTIONS_MERCHANT_ID   (เลขร้านค้า / refno prefix)
-//   PAYSOLUTIONS_API_KEY       (secret key สำหรับ verify signature)
-//   PAYSOLUTIONS_ENDPOINT      (เช่น https://www.thaiepay.com/epaylink/payment.aspx — ยืนยันกับ PaySolutions)
-//   PUBLIC_BASE_URL            (เช่น https://market.rectokenasean.com  — ใช้สร้าง return/postback url)
-//
-// NOTE: ฟิลด์/ชื่อพารามิเตอร์ของ PaySolutions ต่างตาม product (ThaiEpay vs PaySolutions API).
-//       ค่าด้านล่างอิง ThaiEpay hosted form ที่นิยมใช้ — ปรับชื่อ field ตามเอกสารร้านค้าจริงของคุณ.
+//   PAYSOLUTIONS_MERCHANT_ID   8-digit merchant id (e.g. 12345678)
+//   PAYSOLUTIONS_BEARER        Bearer token for PromptPay API (auth header)
+//   PAYSOLUTIONS_API_KEY       apikey for Inquiry API (contact Payso staff)
+//   PAYSOLUTIONS_SECRET_KEY    secretkey for Inquiry API (contact Payso staff)
+//   PAYSOLUTIONS_BASE          default https://apis.paysolutions.asia
 
-const crypto = require('crypto');
-
+const BASE     = (process.env.PAYSOLUTIONS_BASE || 'https://apis.paysolutions.asia').replace(/\/$/, '');
 const MERCHANT = process.env.PAYSOLUTIONS_MERCHANT_ID || '';
+const BEARER   = process.env.PAYSOLUTIONS_BEARER || '';
 const API_KEY  = process.env.PAYSOLUTIONS_API_KEY || '';
-const ENDPOINT = process.env.PAYSOLUTIONS_ENDPOINT || 'https://www.thaiepay.com/epaylink/payment.aspx';
-const BASE     = (process.env.PUBLIC_BASE_URL || '').replace(/\/$/, '');
+const SECRET   = process.env.PAYSOLUTIONS_SECRET_KEY || '';
 
-function configured() { return !!(MERCHANT && API_KEY && BASE); }
+function configured() { return !!(MERCHANT && BEARER); }
 
-// Build the hosted-checkout payload. Frontend posts these fields to ENDPOINT.
-function createCheckout({ orderRef, amountTHB, productName, email }) {
+// PaySolutions requires a unique 12-digit numeric referenceNo.
+// Our order ref is "ORD-000001"; derive a stable 12-digit number from the order id.
+function refToNumeric(orderId) {
+  return String(orderId).replace(/\D/g, '').padStart(12, '0').slice(-12);
+}
+
+// Create a PromptPay QR for an order. Returns { referenceNo, qrImage(dataURL), orderNo, expire }.
+async function createPromptPay({ orderId, amountTHB, productName, email, customerName }) {
   if (!configured())
-    throw new Error('PaySolutions not configured: set PAYSOLUTIONS_MERCHANT_ID, PAYSOLUTIONS_API_KEY, PUBLIC_BASE_URL');
-  const fields = {
-    merchantid: MERCHANT,
-    refno: orderRef,
-    customeremail: email || '',
-    productdetail: productName || 'REC Token',
-    total: amountTHB.toFixed(2),
-    cc: '00',                       // 00 = THB
-    lang: 'TH',
-    returnurl: `${BASE}/api/pay/paysolutions/return`,
-    postbackurl: `${BASE}/api/pay/paysolutions/postback`,
-    channel: 'creditcard,promptpay' // ปรับตาม product ที่เปิดใช้
+    throw new Error('PaySolutions not configured: set PAYSOLUTIONS_MERCHANT_ID + PAYSOLUTIONS_BEARER');
+  const referenceNo = refToNumeric(orderId);
+  const params = new URLSearchParams({
+    merchantID: MERCHANT,
+    productDetail: (productName || 'REC Token').replace(/[<>&]/g, '').slice(0, 1024),
+    customerEmail: email || 'customer@rectokenasean.com',
+    customerName: (customerName || (email || 'customer').split('@')[0]).replace(/[<>&]/g, '').slice(0, 100),
+    total: Number(amountTHB).toFixed(2),   // min 6 baht
+    referenceNo
+  });
+  const res = await fetch(`${BASE}/tep/api/v2/promptpaynew?${params.toString()}`, {
+    method: 'POST',
+    headers: { accept: 'application/json', authorization: `Bearer ${BEARER}` }
+  });
+  const data = await res.json().catch(() => ({}));
+  if (data.status !== 'success' || !data.data || !data.data.image) {
+    throw new Error('PaySolutions promptpay error: ' + (data.message || JSON.stringify(data).slice(0, 200)));
+  }
+  return {
+    referenceNo,
+    qrImage: data.data.image,        // "data:image/png;base64,...."
+    orderNo: data.data.orderNo,
+    total: data.data.total,
+    expire: data.data.expiredate || null
   };
-  return { provider: 'paysolutions', action: ENDPOINT, method: 'POST', fields };
 }
 
-// PaySolutions postback verification.
-// ThaiEpay sends back: refno, total, status (CO=complete), and a checksum/signature.
-// Verify by recomputing the signature with API_KEY. (ปรับสูตรตามเอกสารจริง.)
-function verifyPostback(body) {
-  const { refno, total, status } = body || {};
-  const paid = String(status || '').toUpperCase() === 'CO'
-            || String(status || '').toLowerCase() === 'success';
-  // signature check — example (md5 of refno+total+key). ยืนยันสูตรกับเอกสาร PaySolutions.
-  const sig = body.checksum || body.signature || '';
-  const expect = crypto.createHash('md5')
-    .update(`${MERCHANT}${refno}${total}${API_KEY}`).digest('hex');
-  const sigOk = !sig || sig.toLowerCase() === expect.toLowerCase(); // ถ้ายังไม่มี checksum ก็ผ่านชั่วคราว
-  return { refno, total, paid: paid && sigOk, sigOk, raw: body };
+// Poll payment status via Inquiry API. Returns { paid, status, raw }.
+// CAUTION (per docs): if payment not successful, Payso returns NO body.
+async function inquire({ referenceNo, orderNo }) {
+  if (!API_KEY || !SECRET)
+    throw new Error('Inquiry not configured: set PAYSOLUTIONS_API_KEY + PAYSOLUTIONS_SECRET_KEY');
+  const merchant5 = MERCHANT.slice(-5);
+  const res = await fetch(`${BASE}/order/orderdetailpost`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      merchantID: merchant5,
+      merchantSecretKey: SECRET,
+      apikey: API_KEY
+    },
+    body: JSON.stringify({
+      merchantID: merchant5,
+      orderNo: orderNo || 'X',
+      refno: referenceNo || 'X',
+      productDetail: 'QWERTY'
+    })
+  });
+  const text = await res.text();
+  if (!text) return { paid: false, status: 'PENDING', raw: null }; // no body = not paid yet
+  let data; try { data = JSON.parse(text); } catch { return { paid: false, status: 'UNKNOWN', raw: text }; }
+  const status = (data.Status || '').toUpperCase();
+  const paid = status === 'CP' || (data.StatusName || '').toUpperCase() === 'COMPLETE';
+  return { paid, status: data.StatusName || status, raw: data };
 }
 
-module.exports = { configured, createCheckout, verifyPostback, ENDPOINT };
+module.exports = { configured, createPromptPay, inquire, refToNumeric, BASE };
