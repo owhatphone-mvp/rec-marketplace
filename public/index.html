@@ -78,9 +78,10 @@
   <div id="view-buy" class="hidden">
     <div class="card"><h2>ซื้อ REC <span class="pill" style="float:right">฿<span id="buy-price">40</span>/REC</span></h2>
       <div style="text-align:center;color:var(--muted);font-size:12px;margin-top:10px">จำนวน REC</div>
-      <input class="amt" id="buy-qty" type="number" value="25" oninput="buyCalc()" inputmode="numeric">
-      <div style="text-align:center;color:var(--muted);font-size:14px">= ฿<span id="buy-total">1,000.00</span></div>
-      <div class="chips"><button class="chip" onclick="setQ(10)">10</button><button class="chip" onclick="setQ(25)">25</button><button class="chip" onclick="setQ(100)">100</button></div>
+      <input class="amt" id="buy-qty" type="number" value="1" min="1" step="1" oninput="buyCalc()" inputmode="numeric">
+      <div style="text-align:center;color:var(--muted);font-size:14px">= ฿<span id="buy-total">40.00</span></div>
+      <div class="chips"><button class="chip" onclick="setQ(1)">1</button><button class="chip" onclick="setQ(10)">10</button><button class="chip" onclick="setQ(25)">25</button><button class="chip" onclick="setQ(100)">100</button></div>
+      <p class="sub" style="font-size:11.5px;text-align:center">ขั้นต่ำ <b>1 เหรียญ</b> (PromptPay) · ชำระด้วย<b>บัตรเครดิต</b>ขั้นต่ำ <b>10 เหรียญ</b></p>
       <p class="sub" style="font-size:11px">ขายทางเดียว ระบบไม่รับซื้อคืน — REC ใช้ถือครองหรือ retire รับ certificate</p>
       <button class="btn btn-primary" onclick="show('pay')">ถัดไป</button>
       <button class="btn btn-ghost" style="margin-top:8px" onclick="show('home')">ยกเลิก</button></div>
@@ -88,6 +89,7 @@
   <div id="view-pay" class="hidden">
     <div class="card"><h2>ชำระเงิน</h2>
       <div class="seg"><button id="pm-pp" class="on" onclick="payTab('promptpay')">PromptPay</button><button id="pm-cc" onclick="payTab('card')">บัตรเครดิต</button></div>
+      <div id="card-min-note" class="hidden" style="font-size:11px;color:var(--amber,#b45309);text-align:center;margin-bottom:8px">บัตรเครดิตขั้นต่ำ 10 เหรียญ</div>
       <div id="pp-box" style="text-align:center"><div class="qr"></div><div style="font-size:12px;color:var(--muted)">QR จะแสดงหลังกดยืนยัน</div></div>
       <div id="cc-box" class="hidden" style="text-align:center;padding:14px 4px"><div style="font-size:13px;color:var(--muted);line-height:1.6">กด "ยืนยันชำระเงิน" เพื่อไปหน้าชำระเงินที่ปลอดภัยของ PaySolutions<br>รองรับบัตรเครดิต/เดบิต, ผ่อนชำระ, internet banking</div></div>
       <div class="summary" style="margin-top:14px"><div><span>รับ</span><b><span id="pay-qty">25</span> REC</b></div><div class="tot"><span>ยอดชำระ</span><b>฿<span id="pay-total">1,000.00</span></b></div></div>
