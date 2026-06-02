@@ -76,6 +76,10 @@
   .fah-foot{padding:12px 16px;border-top:1px solid var(--line);background:#fff;text-align:center}
   .fah-foot a{display:block;background:linear-gradient(135deg,#0ea5e9,#22c55e);color:#fff;text-decoration:none;font-weight:700;font-size:13.5px;padding:12px;border-radius:12px}
   @media(max-width:430px){.fah-btn .lb{display:none}.fah-btn{padding:0;width:60px;justify-content:center}}
+  .fah-msg.user{align-self:flex-end;flex-direction:row-reverse;margin-left:auto}
+  .fah-msg.user .bubble{background:linear-gradient(135deg,#0ea5e9,#22c55e);color:#fff;border-top-right-radius:4px;font-weight:500}
+  .fah-quick{max-height:none}
+  .fah-quick button{font-size:12px;padding:9px 13px}
 </style>
 </head>
 <body>
@@ -155,13 +159,17 @@
     <div><h4>ฟ้า AI</h4><div class="sub">ผู้ช่วยเรื่องซื้อขาย &amp; retire REC</div></div>
     <button class="fah-close" onclick="fahToggle()">✕</button>
   </div>
-  <div class="fah-quick" id="fahQuick">
-    <div class="qlabel">เลือกหัวข้อ หรือพิมพ์ถามฟ้าในกรอบด้านล่างได้เลย 👇</div>
-    <button onclick="fahAsk('ซื้อ REC ยังไง ต้องทำขั้นตอนไหนบ้าง')">💰 ซื้อ REC ยังไง? ขั้นตอนการซื้อ</button>
-    <button onclick="fahAsk('retire REC คืออะไร ทำยังไง ได้ certificate ไหม')">♻️ Retire REC คืออะไร ทำยังไง</button>
-    <button onclick="fahAsk('จ่ายเงินด้วยอะไรได้บ้าง PromptPay หรือบัตร และขั้นต่ำเท่าไหร่')">💳 ชำระเงิน &amp; ขั้นต่ำการซื้อ</button>
+  <div class="fah-body" id="fahBody">
+    <div class="fah-msg bot"><div class="fah-mini">ฟ้า</div><div class="bubble">สวัสดีค่ะ 🌱 ฟ้าช่วยเรื่อง <b>การซื้อขายและ retire REC</b> ที่นี่ได้เลยค่ะ<br>แตะคำถามด้านล่าง หรือพิมพ์ถามฟ้าก็ได้นะคะ</div></div>
   </div>
-  <iframe id="fahFrame" title="ฟ้า AI" style="flex:1;border:0;width:100%;background:#fff" src="about:blank" loading="lazy"></iframe>
+  <div class="fah-quick" id="fahQuick">
+    <button onclick="fahAns('buy')">💰 ซื้อ REC ยังไง? ขั้นตอนการซื้อ</button>
+    <button onclick="fahAns('retire')">♻️ Retire REC คืออะไร ทำยังไง</button>
+    <button onclick="fahAns('pay')">💳 ชำระเงิน &amp; ขั้นต่ำการซื้อ</button>
+    <button onclick="fahAns('what')">🪙 REC คืออะไร ซื้อแล้วได้อะไร</button>
+    <button onclick="fahAns('wallet')">👛 Wallet ของฉันอยู่ไหน เก็บ REC ยังไง</button>
+  </div>
+  <div class="fah-foot"><a href="https://fah.rectokenasean.com" target="_blank" rel="noopener">มีคำถามอื่น? คุยกับฟ้า AI เต็มรูปแบบ →</a></div>
 </div>
 <script src="config.js"></script>
 <script src="app.js"></script>
