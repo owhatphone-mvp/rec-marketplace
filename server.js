@@ -67,8 +67,8 @@ app.post('/api/orders',auth,async(req,res)=>{
   if(q>available) return res.status(409).json({error:`insufficient inventory (available ${available})`});
   const amountTHB=q*c.priceTHB; const id=nextId('order'); const ref='ORD-'+String(id).padStart(6,'0');
   const u=findUser(req.user.uid);
-  let pay; try{ pay=await payment.createPayment({method,amountTHB,orderRef:ref,email:u.email,productName:q+' REC'}); }catch(e){ return res.status(500).json({error:e.message}); }
-  const order={ id,ref,userId:u.id,qty:q,priceTHB:c.priceTHB,amountTHB,method,provider:pay.provider,status:'pending',amlReview:amountTHB>=AML_THRESHOLD,promptpay:pay.promptpay||null,createdAt:new Date().toISOString() };
+  let pay; try{ pay=await payment.createPayment({method,amountTHB,orderRef:ref,orderId:id,email:u.email,productName:q+' REC'}); }catch(e){ return res.status(500).json({error:e.message}); }
+  const order={ id,ref,userId:u.id,qty:q,priceTHB:c.priceTHB,amountTHB,method,provider:pay.provider,status:'pending',amlReview:amountTHB>=AML_THRESHOLD,promptpay:pay.promptpay||null,psRef:pay.referenceNo||null,psOrderNo:pay.orderNo||null,createdAt:new Date().toISOString() };
   d.orders.push(order); save();
   res.json({ order, payment:pay });
 });
@@ -114,29 +114,23 @@ app.post('/api/admin/price',adminOnly,(req,res)=>{
   db().config.priceTHB=p; save(); res.json({config:db().config});
 });
 
-// ---- PaySolutions callbacks ----
+// ---- PaySolutions: poll inquiry to confirm PromptPay payment ----
 function creditOrderPaid(order){
-  if(order.status==='paid') return;
+  if(order.status==='paid') return false;
   order.status='paid'; order.paidAt=new Date().toISOString();
   const u=findUser(order.userId); if(u){ u.recBalance+=order.qty; }
   db().config.recSold+=order.qty; save();
+  return true;
 }
-// server-to-server postback (source of truth)
-app.post('/api/pay/paysolutions/postback', express.urlencoded({extended:true}), (req,res)=>{
-  if(!payment.paysol) return res.status(500).send('paysolutions not loaded');
-  const v=payment.paysol.verifyPostback(req.body||{});
-  const order=db().orders.find(o=>o.ref===v.refno);
-  if(!order) return res.status(404).send('order not found');
-  if(v.paid) creditOrderPaid(order);
-  else { order.status='failed'; save(); }
-  res.send('OK'); // PaySolutions expects a 200 ack
-});
-// browser return (UX redirect back to wallet)
-app.all('/api/pay/paysolutions/return', express.urlencoded({extended:true}), (req,res)=>{
-  const ref=(req.body&&req.body.refno)||req.query.refno||'';
-  const order=db().orders.find(o=>o.ref===ref);
-  const ok=order&&order.status==='paid';
-  res.redirect(ok ? '/?paid='+encodeURIComponent(ref) : '/?pending='+encodeURIComponent(ref));
+app.post('/api/orders/:id/poll', auth, async (req,res)=>{
+  const order=db().orders.find(o=>o.id===Number(req.params.id)&&o.userId===req.user.uid);
+  if(!order) return res.status(404).json({error:'order not found'});
+  if(order.status==='paid') return res.json({ paid:true, order });
+  if(!payment.paysol) return res.status(500).json({error:'paysolutions not loaded'});
+  let r; try{ r=await payment.paysol.inquire({ referenceNo:order.psRef, orderNo:order.psOrderNo }); }
+  catch(e){ return res.status(500).json({error:e.message}); }
+  if(r.paid){ creditOrderPaid(order); return res.json({ paid:true, order }); }
+  res.json({ paid:false, status:r.status });
 });
 
 app.get('/api/health',(req,res)=>res.json({ok:true,paymentMode:payment.MODE}));
