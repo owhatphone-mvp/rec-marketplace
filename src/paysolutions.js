@@ -82,4 +82,28 @@ async function inquire({ referenceNo, orderNo }) {
   return { paid, status: data.StatusName || status, raw: data };
 }
 
-module.exports = { configured, createPromptPay, inquire, refToNumeric, BASE };
+// ---- Credit card / e-Payment hosted redirect (Simple payment) ----
+// Docs: POST form -> https://payments.paysolutions.asia/payment
+// Customer picks card / installment / internet banking on Payso's page.
+// Confirmation is verified the same way as PromptPay: via Inquiry API (poll).
+const PAY_PAGE = process.env.PAYSOLUTIONS_PAYMENT_URL || 'https://payments.paysolutions.asia/payment';
+function createCheckout({ orderId, amountTHB, productName, email }) {
+  if (!MERCHANT) throw new Error('PaySolutions not configured: set PAYSOLUTIONS_MERCHANT_ID');
+  const refno = refToNumeric(orderId);
+  return {
+    action: PAY_PAGE,
+    method: 'POST',
+    referenceNo: refno,
+    fields: {
+      merchantid: MERCHANT,
+      refno,
+      customeremail: email || 'customer@rectokenasean.com',
+      productdetail: (productName || 'REC Token').replace(/[<>&"]/g, '').slice(0, 255),
+      total: Number(amountTHB).toFixed(2),
+      cc: '00',     // THB
+      lang: 'TH'
+    }
+  };
+}
+
+module.exports = { configured, createPromptPay, createCheckout, inquire, refToNumeric, BASE };
