@@ -88,8 +88,8 @@
   <div id="view-pay" class="hidden">
     <div class="card"><h2>ชำระเงิน</h2>
       <div class="seg"><button id="pm-pp" class="on" onclick="payTab('promptpay')">PromptPay</button><button id="pm-cc" onclick="payTab('card')">บัตรเครดิต</button></div>
-      <div id="pp-box" style="text-align:center"><div class="qr"></div><div style="font-size:12px;color:var(--muted)">สแกนเพื่อจ่าย (เดโม่)</div></div>
-      <div id="cc-box" class="hidden"><label>หมายเลขบัตร</label><input value="4242 4242 4242 4242"><div style="display:flex;gap:10px"><div style="flex:1"><label>หมดอายุ</label><input value="12/28"></div><div style="flex:1"><label>CVV</label><input value="123"></div></div></div>
+      <div id="pp-box" style="text-align:center"><div class="qr"></div><div style="font-size:12px;color:var(--muted)">QR จะแสดงหลังกดยืนยัน</div></div>
+      <div id="cc-box" class="hidden" style="text-align:center;padding:14px 4px"><div style="font-size:13px;color:var(--muted);line-height:1.6">กด "ยืนยันชำระเงิน" เพื่อไปหน้าชำระเงินที่ปลอดภัยของ PaySolutions<br>รองรับบัตรเครดิต/เดบิต, ผ่อนชำระ, internet banking</div></div>
       <div class="summary" style="margin-top:14px"><div><span>รับ</span><b><span id="pay-qty">25</span> REC</b></div><div class="tot"><span>ยอดชำระ</span><b>฿<span id="pay-total">1,000.00</span></b></div></div>
       <button class="btn btn-primary" style="margin-top:14px" id="pay-btn" onclick="doBuy()">ยืนยันชำระเงิน</button>
       <button class="btn btn-ghost" style="margin-top:8px" onclick="show('buy')">กลับ</button></div>
