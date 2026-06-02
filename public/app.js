@@ -137,3 +137,11 @@ const _pp=new URLSearchParams(location.search); if(_pp.get('paid')) setTimeout((
   }catch(e){}
 })();
 loadMarket().then(()=>{ if(token) show('home'); else show('auth'); });
+
+// ===== ฟ้า AI panel =====
+function fahToggle(){ document.getElementById('fahPanel').classList.toggle('show'); }
+function fahAsk(q){
+  // ส่งคำถามไปหน้าแชตฟ้าเต็ม (เปิดแท็บใหม่พร้อม prefill ถ้าฟ้ารองรับ ?q=)
+  const url='https://fah.rectokenasean.com/?q='+encodeURIComponent(q);
+  window.open(url,'_blank','noopener,noreferrer');
+}
