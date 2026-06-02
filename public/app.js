@@ -4,6 +4,7 @@ let market = { priceTHB: 40 };
 let authMode = 'signup';
 let payMethod = 'promptpay';
 const $ = id => document.getElementById(id);
+const MIN_QTY=1, MIN_CARD_QTY=10;
 const fmt = n => Number(n).toLocaleString('th-TH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 function toast(msg){ const t=document.createElement('div'); t.className='toast'; t.textContent=msg; document.body.appendChild(t); setTimeout(()=>t.remove(),2600); }
 async function api(path, opts={}){
@@ -50,7 +51,9 @@ async function loadWallet(){
 const qty=()=>Math.max(0,Math.floor(Number($('buy-qty').value)||0));
 function setQ(v){ $('buy-qty').value=v; buyCalc(); }
 function buyCalc(){ $('buy-total').textContent=fmt(qty()*market.priceTHB); }
-function payTab(m){ payMethod=m; $('pm-pp').classList.toggle('on',m==='promptpay'); $('pm-cc').classList.toggle('on',m==='card'); $('pp-box').classList.toggle('hidden',m!=='promptpay'); $('cc-box').classList.toggle('hidden',m!=='card'); }
+function payTab(m){ payMethod=m; $('pm-pp').classList.toggle('on',m==='promptpay'); $('pm-cc').classList.toggle('on',m==='card'); $('pp-box').classList.toggle('hidden',m!=='promptpay'); $('cc-box').classList.toggle('hidden',m!=='card');
+  const note=document.getElementById('card-min-note'); if(note) note.classList.toggle('hidden', m!=='card');
+}
 let pollTimer=null;
 function stopPoll(){ if(pollTimer){ clearInterval(pollTimer); pollTimer=null; } }
 function showQR(dataUrl){
@@ -70,7 +73,9 @@ function pollOrder(orderId, qtyN){
   }, 4000);
 }
 async function doBuy(){
-  const q=qty(); if(q<=0) return toast('ใส่จำนวน REC');
+  const q=qty();
+  if(q<MIN_QTY) return toast('ขั้นต่ำ '+MIN_QTY+' เหรียญ');
+  if(payMethod==='card' && q<MIN_CARD_QTY) return toast('ชำระด้วยบัตรเครดิตขั้นต่ำ '+MIN_CARD_QTY+' เหรียญ — กรุณาเพิ่มจำนวน หรือใช้ PromptPay');
   $('pay-btn').disabled=true; $('pay-btn').innerHTML='<span class="loader"></span> กำลังประมวลผล...';
   try{
     const {order,payment}=await api('/api/orders',{method:'POST',body:JSON.stringify({qty:q,method:payMethod})});
