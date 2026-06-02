@@ -4,7 +4,8 @@ const cors = require('cors');
 const path = require('path');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const { db, save, nextId } = require('./src/db');
+const dbmod = require('./src/db');
+const { db, save, nextId } = dbmod;
 const payment = require('./src/payment');
 const { renderCertificate } = require('./src/certificate');
 
@@ -79,11 +80,11 @@ app.post('/api/orders/:id/confirm',auth,async(req,res)=>{
   let result; try{ result=await payment.confirmPayment({provider:order.provider}); }catch(e){ return res.status(500).json({error:e.message}); }
   if(result.status!=='paid') return res.status(402).json({error:'payment not completed'});
   order.status='paid'; order.paidAt=new Date().toISOString();
-  const u=findUser(order.userId); u.recBalance+=order.qty; d.config.recSold+=order.qty; save();
+  const u=findUser(order.userId); u.recBalance+=order.qty; d.config.recSold+=order.qty; await save();
   res.json({ order, user:publicUser(u) });
 });
 
-app.post('/api/retire',auth,(req,res)=>{
+app.post('/api/retire',auth,async(req,res)=>{
   const {qty,beneficiary,purpose}=req.body||{};
   const q=Math.floor(Number(qty));
   if(!q||q<=0) return res.status(400).json({error:'qty must be > 0'});
@@ -92,7 +93,7 @@ app.post('/api/retire',auth,(req,res)=>{
   const d=db(); u.recBalance-=q; d.config.recRetired+=q;
   const seq=nextId('cert');
   const cert={ id:'REC-RT-'+String(seq).padStart(6,'0'), userId:u.id, amount:q, beneficiary:beneficiary||u.email, purpose:purpose||'Voluntary REC retirement', walletRef:u.walletType==='metamask'?u.address:u.email, date:new Date().toLocaleDateString('th-TH',{day:'numeric',month:'short',year:'numeric'}), createdAt:new Date().toISOString() };
-  d.certificates.push(cert); save();
+  d.certificates.push(cert); await save();
   res.json({ certificate:cert, user:publicUser(u) });
 });
 app.get('/api/certificates/:id',(req,res)=>{
@@ -115,11 +116,11 @@ app.post('/api/admin/price',adminOnly,(req,res)=>{
 });
 
 // ---- PaySolutions: poll inquiry to confirm PromptPay payment ----
-function creditOrderPaid(order){
+async function creditOrderPaid(order){
   if(order.status==='paid') return false;
   order.status='paid'; order.paidAt=new Date().toISOString();
   const u=findUser(order.userId); if(u){ u.recBalance+=order.qty; }
-  db().config.recSold+=order.qty; save();
+  db().config.recSold+=order.qty; await save();
   return true;
 }
 app.post('/api/orders/:id/poll', auth, async (req,res)=>{
@@ -129,11 +130,13 @@ app.post('/api/orders/:id/poll', auth, async (req,res)=>{
   if(!payment.paysol) return res.status(500).json({error:'paysolutions not loaded'});
   let r; try{ r=await payment.paysol.inquire({ referenceNo:order.psRef, orderNo:order.psOrderNo }); }
   catch(e){ return res.status(500).json({error:e.message}); }
-  if(r.paid){ creditOrderPaid(order); return res.json({ paid:true, order }); }
+  if(r.paid){ await creditOrderPaid(order); return res.json({ paid:true, order }); }
   res.json({ paid:false, status:r.status });
 });
 
 app.get('/api/health',(req,res)=>res.json({ok:true,paymentMode:payment.MODE}));
 
 const PORT=process.env.PORT||3000;
-app.listen(PORT,()=>console.log(`REC Marketplace on http://localhost:${PORT} (payment: ${payment.MODE})`));
+dbmod.init().then(()=>{
+  app.listen(PORT,()=>console.log(`REC Marketplace on http://localhost:${PORT} (payment: ${payment.MODE}, db: ${dbmod.USE_PG?'postgres':'json'})`));
+}).catch(e=>{ console.error('DB init failed:',e); process.exit(1); });
