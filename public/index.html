@@ -105,6 +105,25 @@
       <input id="au-pass" type="password" placeholder="••••••" autocomplete="new-password" oninput="checkPwMatch()">
       <div id="pw2-wrap"><label>ยืนยันรหัสผ่านอีกครั้ง</label>
         <input id="au-pass2" type="password" placeholder="••••••" autocomplete="new-password" oninput="checkPwMatch()"></div>
+      <div id="phone-wrap"><label>เบอร์มือถือ <span style="color:var(--muted);font-weight:400">— ไม่บังคับ (ไว้ติดต่อ/กู้บัญชี)</span></label>
+        <div style="display:flex;gap:8px">
+          <select id="au-cc" style="flex:0 0 116px;border:1.5px solid var(--line);border-radius:10px;padding:12px 8px;font-size:14px;font-family:inherit;background:#fff">
+            <option value="66" selected>🇹🇭 +66</option>
+            <option value="65">🇸🇬 +65</option>
+            <option value="60">🇲🇾 +60</option>
+            <option value="84">🇻🇳 +84</option>
+            <option value="62">🇮🇩 +62</option>
+            <option value="63">🇵🇭 +63</option>
+            <option value="856">🇱🇦 +856</option>
+            <option value="855">🇰🇭 +855</option>
+            <option value="95">🇲🇲 +95</option>
+            <option value="1">🇺🇸 +1</option>
+            <option value="44">🇬🇧 +44</option>
+            <option value="86">🇨🇳 +86</option>
+            <option value="81">🇯🇵 +81</option>
+          </select>
+          <input id="au-phone" type="tel" inputmode="numeric" placeholder="81 234 5678" autocomplete="tel" style="flex:1">
+        </div></div>
       <div id="pw-msg" style="font-size:11.5px;margin-top:6px;min-height:14px"></div>
       <button class="btn btn-primary" style="margin-top:12px" id="au-btn" onclick="doAuth()">สมัครและสร้าง Wallet</button>
       <div class="banner" style="background:var(--green-l);border-color:#c9e9d4;color:var(--green-d)">🔐 <b>การสมัคร = สร้าง Wallet ให้คุณทันที</b> ตามอีเมลนี้ — เก็บอีเมลและรหัสผ่านไว้เป็นความลับ เพราะใช้เข้าถึง REC ในกระเป๋าของคุณ</div>
