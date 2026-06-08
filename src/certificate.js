@@ -31,6 +31,8 @@ function renderCertificate(cert){
     <tr><td class="k">วันที่ / Date</td><td class="v">${escapeHtml(date)}</td></tr>
     <tr><td class="k">Certificate ID</td><td class="v">${escapeHtml(id)}</td></tr>
     <tr><td class="k">Wallet</td><td class="v">${escapeHtml(walletRef||'-')}</td></tr>
+    <tr><td class="k">ออกโดย / Issued by</td><td class="v">RECTOKEN by BlockEdge</td></tr>
+    <tr><td class="k">จัดจำหน่ายและดำเนินการ retire โดย<br>Sold &amp; retired via</td><td class="v">M Vision Public Co., Ltd.</td></tr>
     <tr><td class="k">Registry</td><td class="v">I-REC / REDEX</td></tr>
     <tr><td class="k">สถานะ / Status</td><td class="v"><span class="status">Retired &middot; double-counting prevented</span></td></tr>
     <tr><td class="k">ตรวจสอบบนบล็อกเชน / Verify on-chain</td><td class="v"><a href="https://explorer.optimism.io/address/0xb10c4EDf6Ee11F084fc24851883B0B237C96E6A8" target="_blank" rel="noopener" style="color:#0f7d39;font-weight:700;text-decoration:none">&#128279; ดูบน Optimism Explorer</a><div style="font-size:10px;color:#94a3b8;font-weight:400">เร็วๆ นี้จะลิงก์ตรงรายการธุรกรรมของใบนี้</div></td></tr>
