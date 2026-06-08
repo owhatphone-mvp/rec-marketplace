@@ -31,6 +31,7 @@ async function loadMarket(){
 }
 function authTab(m){ authMode=m; $('tab-signup').classList.toggle('on',m==='signup'); $('tab-login').classList.toggle('on',m==='login'); $('au-btn').textContent=m==='signup'?'สมัครและสร้าง Wallet':'เข้าสู่ระบบ';
   const w=$('pw2-wrap'); if(w) w.style.display = m==='signup' ? 'block':'none';
+  const ph=$('phone-wrap'); if(ph) ph.style.display = m==='signup' ? 'block':'none';
   checkPwMatch();
 }
 function checkPwMatch(){
@@ -51,8 +52,10 @@ async function doAuth(){
     const p2=($('au-pass2')||{}).value||'';
     if(password!==p2) return toast('รหัสผ่านยืนยันไม่ตรงกัน');
   }
+  let phone='';
+  if(authMode==='signup'){ const cc=($('au-cc')||{}).value||''; const ph=(($('au-phone')||{}).value||'').replace(/[^0-9]/g,''); if(ph) phone='+'+cc+ph; }
   $('au-btn').disabled=true;
-  try{ const res=await api(authMode==='signup'?'/api/auth/signup':'/api/auth/login',{method:'POST',body:JSON.stringify({email,password})});
+  try{ const res=await api(authMode==='signup'?'/api/auth/signup':'/api/auth/login',{method:'POST',body:JSON.stringify({email,password,phone})});
     token=res.token; localStorage.setItem('rec_token',token); show('home');
   }catch(e){ toast(e.message); } $('au-btn').disabled=false;
 }
