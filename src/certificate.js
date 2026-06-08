@@ -33,7 +33,12 @@ function renderCertificate(cert){
     <tr><td class="k">Wallet</td><td class="v">${escapeHtml(walletRef||'-')}</td></tr>
     <tr><td class="k">Registry</td><td class="v">I-REC / REDEX</td></tr>
     <tr><td class="k">สถานะ / Status</td><td class="v"><span class="status">Retired &middot; double-counting prevented</span></td></tr>
+    <tr><td class="k">ตรวจสอบบนบล็อกเชน / Verify on-chain</td><td class="v"><a href="https://explorer.optimism.io/address/0xb10c4EDf6Ee11F084fc24851883B0B237C96E6A8" target="_blank" rel="noopener" style="color:#0f7d39;font-weight:700;text-decoration:none">&#128279; ดูบน Optimism Explorer</a><div style="font-size:10px;color:#94a3b8;font-weight:400">เร็วๆ นี้จะลิงก์ตรงรายการธุรกรรมของใบนี้</div></td></tr>
   </table>
+  <div style="margin-top:18px;padding:14px 16px;background:#f6fdf8;border:1px solid #cfe6d6;border-radius:12px;text-align:center">
+    <div style="font-size:13.5px;color:#0f7d39;font-weight:600;line-height:1.5">ขอบคุณที่ร่วมสนับสนุนพลังงานสะอาดเพื่ออนาคตที่ยั่งยืน</div>
+    <div style="font-size:12px;color:#6b7785;margin-top:3px">Thank you for advancing a sustainable, clean-energy future.</div>
+  </div>
   <div class="foot">เอกสารนี้ยืนยันว่าจำนวน REC ข้างต้นถูก retire อย่างถาวรเพื่อวัตถุประสงค์ที่ระบุ &middot; REC = Utility Token พร้อมใช้ กลุ่ม 1 &middot; REC Marketplace เป็นผู้ขายโทเคนกลุ่ม 1 ไม่ใช่ศูนย์ซื้อขายสินทรัพย์ดิจิทัลที่ได้รับใบอนุญาตจาก ก.ล.ต.</div>
   <div style="text-align:center"><button class="btn noprint" onclick="window.print()">พิมพ์ / บันทึกเป็น PDF</button></div>
 </div></body></html>`;
