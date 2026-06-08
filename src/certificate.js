@@ -34,7 +34,7 @@ function renderCertificate(cert){
     <tr><td class="k">Registry</td><td class="v">I-REC / REDEX</td></tr>
     <tr><td class="k">สถานะ / Status</td><td class="v"><span class="status">Retired &middot; double-counting prevented</span></td></tr>
   </table>
-  <div class="foot">เอกสารนี้ยืนยันว่าจำนวน REC ข้างต้นถูก retire อย่างถาวรเพื่อวัตถุประสงค์ที่ระบุ &middot; REC = Utility Token พร้อมใช้ กลุ่ม 1 &middot; REC Marketplace เป็นผู้ขายโทเคนกลุ่ม 1 ไม่ใช่ศูนย์ซื้อขายสินทรัพย์ดิจิทัลที่ได้รับใบอนุญาตจาก ก.ล.ต. &middot; MVP demo — ก่อนใช้จริงต้อง sync การ retire กับ registry จริง</div>
+  <div class="foot">เอกสารนี้ยืนยันว่าจำนวน REC ข้างต้นถูก retire อย่างถาวรเพื่อวัตถุประสงค์ที่ระบุ &middot; REC = Utility Token พร้อมใช้ กลุ่ม 1 &middot; REC Marketplace เป็นผู้ขายโทเคนกลุ่ม 1 ไม่ใช่ศูนย์ซื้อขายสินทรัพย์ดิจิทัลที่ได้รับใบอนุญาตจาก ก.ล.ต.</div>
   <div style="text-align:center"><button class="btn noprint" onclick="window.print()">พิมพ์ / บันทึกเป็น PDF</button></div>
 </div></body></html>`;
 }
