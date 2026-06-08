@@ -44,18 +44,18 @@ function auth(req,res,next){
 }
 function adminOnly(req,res,next){ if((req.headers['x-admin-key']||req.query.key)!==ADMIN_KEY) return res.status(403).json({error:'forbidden'}); next(); }
 function findUser(uid){ return db().users.find(u=>u.id===uid); }
-function publicUser(u){ return { id:u.id, email:u.email, walletType:u.walletType, address:u.address, recBalance:u.recBalance }; }
+function publicUser(u){ return { id:u.id, email:u.email, phone:u.phone||'', walletType:u.walletType, address:u.address, recBalance:u.recBalance }; }
 
 app.get('/api/market',(req,res)=>{ const c=db().config;
   res.json({ priceTHB:c.priceTHB, currency:c.currency, available:Math.max(0,c.treasuryRec-c.recSold), recSold:c.recSold, recRetired:c.recRetired, note:'ช่วงเปิดตัว ราคานี้ · หลังจากนั้นปรับเป็นราคาเฉลี่ยจาก exchange ทั่วโลก' });
 });
 
 app.post('/api/auth/signup',(req,res)=>{
-  const {email,password}=req.body||{};
+  const {email,password,phone}=req.body||{};
   if(!email||!password) return res.status(400).json({error:'email & password required'});
   const d=db();
   if(d.users.find(u=>u.email.toLowerCase()===email.toLowerCase())) return res.status(409).json({error:'email already registered'});
-  const user={ id:nextId('user'), email, passwordHash:bcrypt.hashSync(password,10), walletType:'custodial', address:null, recBalance:0, createdAt:new Date().toISOString(), signupMeta:captureMeta(req) };
+  const user={ id:nextId('user'), email, passwordHash:bcrypt.hashSync(password,10), phone:phone||'', walletType:'custodial', address:null, recBalance:0, createdAt:new Date().toISOString(), signupMeta:captureMeta(req) };
   d.users.push(user); save();
   res.json({ token:sign(user), user:publicUser(user) });
 });
@@ -175,7 +175,7 @@ function sendCSV(res,name,csv){
 app.get('/api/admin/export/users',adminOnly,(req,res)=>{
   const rows=db().users;
   sendCSV(res,'rec-users.csv',toCSV(rows,[
-    {label:'id',key:'id'},{label:'email',key:'email'},
+    {label:'id',key:'id'},{label:'email',key:'email'},{label:'phone',key:'phone'},
     {label:'walletType',key:'walletType'},{label:'metamaskAddress',get:u=>u.address||''},
     {label:'recBalance',key:'recBalance'},{label:'createdAt',key:'createdAt'},
     {label:'signupIP',get:u=>u.signupMeta?.ip||''},{label:'signupDevice',get:u=>u.signupMeta?.device||''},
