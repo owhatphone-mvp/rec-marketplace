@@ -5,192 +5,205 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>REC Marketplace</title>
 <style>
-  :root{--green:#15a34a;--green-d:#0f7d39;--green-l:#e8f7ee;--ink:#0e1726;--muted:#6b7785;--line:#e6eaef;--bg:#f4f6f8;--amber:#b45309;--amber-bg:#fff7ed;}
-  *{box-sizing:border-box}
-  body{margin:0;font-family:"Segoe UI",system-ui,"Noto Sans Thai",Tahoma,sans-serif;background:var(--bg);color:var(--ink)}
-  header{background:#fff;border-bottom:1px solid var(--line);padding:12px 18px;display:flex;align-items:center;gap:10px;position:sticky;top:0;z-index:5}
-  .logo{width:36px;height:36px;border-radius:10px;background:var(--green);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800}
-  header .url{font-size:11px;color:var(--muted)}
-  header .sp{flex:1}
-  .app{max-width:460px;margin:18px auto;padding:0 16px 60px}
-  .card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px;margin-bottom:14px}
-  h1{font-size:22px;margin:4px 0}h2{font-size:17px;margin:0 0 10px}
-  p.sub{color:var(--muted);font-size:13px;line-height:1.5;margin:0 0 14px}
-  .btn{display:block;width:100%;border:0;border-radius:12px;padding:14px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit}
-  .btn-primary{background:var(--green);color:#fff}.btn-dark{background:#181c24;color:#fff}.btn-ghost{background:#eef1f4;color:var(--ink)}
-  .btn-line{background:#fff;border:1.5px solid var(--line)}
-  .btn:disabled{opacity:.5;cursor:not-allowed}
-  label{font-size:12px;font-weight:600;color:var(--muted);display:block;margin:12px 0 6px}
-  input{width:100%;border:1.5px solid var(--line);border-radius:10px;padding:12px;font-size:15px;font-family:inherit;outline:none}
-  input:focus{border-color:var(--green)}
-  .hero{background:linear-gradient(135deg,#13863e,#1fb15b);color:#fff;border-radius:14px;padding:12px 16px}
-  .hero .price{font-size:24px;font-weight:800;margin:1px 0}.hero small{opacity:.9;font-size:11px}
-  .wallet{background:linear-gradient(135deg,#13863e,#1fb15b);color:#fff;border-radius:16px;padding:18px}
-  .wallet .bal{font-size:28px;font-weight:800;margin:4px 0}
-  .row{display:flex;gap:10px;margin-top:12px}.row .btn{margin:0}
-  .amt{font-size:38px;font-weight:800;text-align:center;border:0;width:100%}
-  .chips{display:flex;gap:8px;justify-content:center;margin:14px 0}
-  .chip{background:#eef1f4;border:0;border-radius:20px;padding:8px 14px;font-weight:700;font-size:13px;cursor:pointer;font-family:inherit}
-  .summary{background:#f8fafc;border:1px solid var(--line);border-radius:12px;padding:12px;font-size:13px}
-  .summary div{display:flex;justify-content:space-between;padding:4px 0}
-  .summary .tot{border-top:1px solid var(--line);margin-top:4px;padding-top:8px;font-weight:800;font-size:15px}
-  .seg{display:flex;background:#eef1f4;border-radius:10px;padding:4px;margin:10px 0}
-  .seg button{flex:1;border:0;background:none;padding:9px;border-radius:8px;font-weight:700;font-size:13px;cursor:pointer;font-family:inherit;color:var(--muted)}
-  .seg button.on{background:#fff;color:var(--ink)}
-  .pill{display:inline-block;font-size:11px;font-weight:700;padding:4px 9px;border-radius:20px;background:var(--green-l);color:var(--green-d)}
-  .qr{width:150px;height:150px;margin:10px auto;background:repeating-linear-gradient(90deg,#0e1726 0 8px,#fff 8px 16px),repeating-linear-gradient(0deg,rgba(0,0,0,.55) 0 8px,transparent 8px 16px);border:6px solid #fff;border-radius:10px;box-shadow:0 0 0 1px var(--line)}
-  .hidden{display:none}
-  .toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:#181c24;color:#fff;padding:11px 16px;border-radius:10px;font-size:13px;z-index:50;max-width:90%}
-  .certrow{display:flex;align-items:center;gap:10px;border:1px solid var(--line);border-radius:12px;padding:10px;margin-top:8px}
-  .certrow .ic{width:32px;height:32px;border-radius:8px;background:var(--green-l);color:var(--green-d);display:flex;align-items:center;justify-content:center}
-  a.cl{color:var(--green-d);font-size:12px}
-  .banner{background:var(--amber-bg);border:1px solid #fde7c7;color:var(--amber);border-radius:10px;padding:10px;font-size:11.5px;line-height:1.5;margin-top:12px}
-  .loader{width:16px;height:16px;border:2.5px solid #c9e9d4;border-top-color:#fff;border-radius:50%;display:inline-block;animation:spin .7s linear infinite;vertical-align:-3px}
-  @keyframes spin{to{transform:rotate(360deg)}}
+:root{--green:#15a34a;--green-d:#0f7d39;--green-l:#e8f7ee;--ink:#0e1726;--muted:#6b7785;--line:#e6eaef;--bg:#f4f6f8;--amber:#b45309;--amber-bg:#fff7ed;}
+*{box-sizing:border-box}
+body{margin:0;font-family:"Segoe UI",system-ui,"Noto Sans Thai",Tahoma,sans-serif;background:var(--bg);color:var(--ink)}
+header{background:#fff;border-bottom:1px solid var(--line);padding:12px 18px;display:flex;align-items:center;gap:10px;position:sticky;top:0;z-index:5}
+.logo{width:36px;height:36px;border-radius:10px;background:var(--green);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800}
+header .url{font-size:11px;color:var(--muted)}
+header .sp{flex:1}
+.app{max-width:460px;margin:18px auto;padding:0 16px 60px}
+.card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px;margin-bottom:14px}
+h1{font-size:22px;margin:4px 0}h2{font-size:17px;margin:0 0 10px}
+p.sub{color:var(--muted);font-size:13px;line-height:1.5;margin:0 0 14px}
+.btn{display:block;width:100%;border:0;border-radius:12px;padding:14px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit}
+.btn-primary{background:var(--green);color:#fff}.btn-dark{background:#181c24;color:#fff}.btn-ghost{background:#eef1f4;color:var(--ink)}
+.btn-line{background:#fff;border:1.5px solid var(--line)}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+label{font-size:12px;font-weight:600;color:var(--muted);display:block;margin:12px 0 6px}
+input{width:100%;border:1.5px solid var(--line);border-radius:10px;padding:12px;font-size:15px;font-family:inherit;outline:none}
+input:focus{border-color:var(--green)}
+.hero{background:linear-gradient(135deg,#13863e,#1fb15b);color:#fff;border-radius:14px;padding:12px 16px}
+.hero .price{font-size:24px;font-weight:800;margin:1px 0}.hero small{opacity:.9;font-size:11px}
+.wallet{background:linear-gradient(135deg,#13863e,#1fb15b);color:#fff;border-radius:16px;padding:18px}
+.wallet .bal{font-size:28px;font-weight:800;margin:4px 0}
+.row{display:flex;gap:10px;margin-top:12px}.row .btn{margin:0}
+.amt{font-size:38px;font-weight:800;text-align:center;border:0;width:100%}
+.chips{display:flex;gap:8px;justify-content:center;margin:14px 0}
+.chip{background:#eef1f4;border:0;border-radius:20px;padding:8px 14px;font-weight:700;font-size:13px;cursor:pointer;font-family:inherit}
+.summary{background:#f8fafc;border:1px solid var(--line);border-radius:12px;padding:12px;font-size:13px}
+.summary div{display:flex;justify-content:space-between;padding:4px 0}
+.summary .tot{border-top:1px solid var(--line);margin-top:4px;padding-top:8px;font-weight:800;font-size:15px}
+.seg{display:flex;background:#eef1f4;border-radius:10px;padding:4px;margin:10px 0}
+.seg button{flex:1;border:0;background:none;padding:9px;border-radius:8px;font-weight:700;font-size:13px;cursor:pointer;font-family:inherit;color:var(--muted)}
+.seg button.on{background:#fff;color:var(--ink)}
+.pill{display:inline-block;font-size:11px;font-weight:700;padding:4px 9px;border-radius:20px;background:var(--green-l);color:var(--green-d)}
+.qr{width:150px;height:150px;margin:10px auto;background:repeating-linear-gradient(90deg,#0e1726 0 8px,#fff 8px 16px),repeating-linear-gradient(0deg,rgba(0,0,0,.55) 0 8px,transparent 8px 16px);border:6px solid #fff;border-radius:10px;box-shadow:0 0 0 1px var(--line)}
+.hidden{display:none}
+.toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:#181c24;color:#fff;padding:11px 16px;border-radius:10px;font-size:13px;z-index:50;max-width:90%}
+.certrow{display:flex;align-items:center;gap:10px;border:1px solid var(--line);border-radius:12px;padding:10px;margin-top:8px}
+.certrow .ic{width:32px;height:32px;border-radius:8px;background:var(--green-l);color:var(--green-d);display:flex;align-items:center;justify-content:center}
+a.cl{color:var(--green-d);font-size:12px}
+.banner{background:var(--amber-bg);border:1px solid #fde7c7;color:var(--amber);border-radius:10px;padding:10px;font-size:11.5px;line-height:1.5;margin-top:12px}
+.loader{width:16px;height:16px;border:2.5px solid #c9e9d4;border-top-color:#fff;border-radius:50%;display:inline-block;animation:spin .7s linear infinite;vertical-align:-3px}
+@keyframes spin{to{transform:rotate(360deg)}}
 
-  .fah-btn{position:fixed;bottom:22px;right:22px;z-index:80;height:60px;padding:0 22px 0 16px;border-radius:34px;background:linear-gradient(135deg,#0ea5e9,#22c55e);color:#fff;border:none;cursor:pointer;font-family:inherit;font-weight:800;font-size:14px;display:flex;align-items:center;gap:11px;box-shadow:0 16px 40px -8px rgba(34,197,94,.5);animation:fah-float 4s ease-in-out infinite}
-  .fah-btn:hover{transform:translateY(-3px) scale(1.04)}
-  .fah-btn .av{width:42px;height:42px;border-radius:50%;background:#fff;display:grid;place-items:center;color:#0e7490;font-weight:900;font-size:16px;position:relative}
-  .fah-btn .av::after{content:"";position:absolute;bottom:1px;right:1px;width:11px;height:11px;border-radius:50%;background:#22c55e;border:2.5px solid #fff}
-  .fah-btn .lb{display:flex;flex-direction:column;align-items:flex-start;line-height:1.15}
-  .fah-btn .lb small{font-size:10.5px;opacity:.9;font-weight:500}
-  @keyframes fah-float{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
-  .fah-panel{position:fixed;bottom:92px;right:22px;z-index:79;width:370px;max-width:calc(100vw - 28px);height:540px;max-height:calc(100vh - 130px);background:#fff;border:1px solid var(--line);border-radius:22px;box-shadow:0 40px 80px -10px rgba(0,0,0,.2);display:flex;flex-direction:column;overflow:hidden;opacity:0;transform:translateY(20px) scale(.97);pointer-events:none;transition:opacity .25s,transform .25s}
-  .fah-panel.show{opacity:1;transform:none;pointer-events:auto}
-  .fah-head{background:linear-gradient(135deg,#0ea5e9,#22c55e);padding:18px 20px;display:flex;align-items:center;gap:13px;color:#fff;position:relative}
-  .fah-head .av{width:44px;height:44px;border-radius:50%;background:#fff;display:grid;place-items:center;font-weight:900;color:#0e7490;font-size:17px}
-  .fah-head h4{font-size:16px;font-weight:800;margin:0}
-  .fah-head .sub{font-size:11px;opacity:.95;display:flex;align-items:center;gap:6px;margin-top:2px}
-  .fah-head .sub::before{content:"";width:7px;height:7px;border-radius:50%;background:#bbf7d0}
-  .fah-close{position:absolute;top:13px;right:13px;width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,.2);border:none;color:#fff;cursor:pointer;font-size:16px}
-  .fah-body{flex:1;overflow-y:auto;padding:18px;display:flex;flex-direction:column;gap:12px;background:var(--bg)}
-  .fah-msg{display:flex;gap:9px;max-width:92%}
-  .fah-msg .bubble{padding:11px 15px;border-radius:16px;font-size:13.5px;line-height:1.55}
-  .fah-msg.bot{align-self:flex-start}
-  .fah-msg.bot .bubble{background:#fff;border:1px solid var(--line);border-top-left-radius:4px;color:var(--ink)}
-  .fah-mini{width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,#0ea5e9,#22c55e);display:grid;place-items:center;color:#fff;font-weight:900;font-size:11px;flex-shrink:0}
-  .fah-quick{display:flex;flex-direction:column;gap:7px;padding:0 18px 14px;background:var(--bg)}
-  .fah-quick .qlabel{font-size:11px;color:var(--muted);margin:2px 0 1px}
-  .fah-quick button{font-family:inherit;font-size:12.5px;padding:10px 14px;border-radius:12px;background:#fff;border:1px solid var(--line);color:var(--ink);cursor:pointer;text-align:left;transition:all .15s}
-  .fah-quick button:hover{background:var(--green-l);border-color:var(--green);color:var(--green-d)}
-  .fah-foot{padding:12px 16px;border-top:1px solid var(--line);background:#fff;text-align:center}
-  .fah-foot a{display:block;background:linear-gradient(135deg,#0ea5e9,#22c55e);color:#fff;text-decoration:none;font-weight:700;font-size:13.5px;padding:12px;border-radius:12px}
-  @media(max-width:430px){.fah-btn .lb{display:none}.fah-btn{padding:0;width:60px;justify-content:center}}
-  .fah-msg.user{align-self:flex-end;flex-direction:row-reverse;margin-left:auto}
-  .fah-msg.user .bubble{background:linear-gradient(135deg,#0ea5e9,#22c55e);color:#fff;border-top-right-radius:4px;font-weight:500}
-  .fah-quick{max-height:none}
-  .fah-quick button{font-size:12px;padding:9px 13px}
+.fah-btn{position:fixed;bottom:22px;right:22px;z-index:80;height:60px;padding:0 22px 0 16px;border-radius:34px;background:linear-gradient(135deg,#0ea5e9,#22c55e);color:#fff;border:none;cursor:pointer;font-family:inherit;font-weight:800;font-size:14px;display:flex;align-items:center;gap:11px;box-shadow:0 16px 40px -8px rgba(34,197,94,.5);animation:fah-float 4s ease-in-out infinite}
+.fah-btn:hover{transform:translateY(-3px) scale(1.04)}
+.fah-btn .av{width:42px;height:42px;border-radius:50%;background:#fff;display:grid;place-items:center;color:#0e7490;font-weight:900;font-size:16px;position:relative}
+.fah-btn .av::after{content:"";position:absolute;bottom:1px;right:1px;width:11px;height:11px;border-radius:50%;background:#22c55e;border:2.5px solid #fff}
+.fah-btn .lb{display:flex;flex-direction:column;align-items:flex-start;line-height:1.15}
+.fah-btn .lb small{font-size:10.5px;opacity:.9;font-weight:500}
+@keyframes fah-float{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+.fah-panel{position:fixed;bottom:92px;right:22px;z-index:79;width:370px;max-width:calc(100vw - 28px);height:540px;max-height:calc(100vh - 130px);background:#fff;border:1px solid var(--line);border-radius:22px;box-shadow:0 40px 80px -10px rgba(0,0,0,.2);display:flex;flex-direction:column;overflow:hidden;opacity:0;transform:translateY(20px) scale(.97);pointer-events:none;transition:opacity .25s,transform .25s}
+.fah-panel.show{opacity:1;transform:none;pointer-events:auto}
+.fah-head{background:linear-gradient(135deg,#0ea5e9,#22c55e);padding:18px 20px;display:flex;align-items:center;gap:13px;color:#fff;position:relative}
+.fah-head .av{width:44px;height:44px;border-radius:50%;background:#fff;display:grid;place-items:center;font-weight:900;color:#0e7490;font-size:17px}
+.fah-head h4{font-size:16px;font-weight:800;margin:0}
+.fah-head .sub{font-size:11px;opacity:.95;display:flex;align-items:center;gap:6px;margin-top:2px}
+.fah-head .sub::before{content:"";width:7px;height:7px;border-radius:50%;background:#bbf7d0}
+.fah-close{position:absolute;top:13px;right:13px;width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,.2);border:none;color:#fff;cursor:pointer;font-size:16px}
+.fah-body{flex:1;overflow-y:auto;padding:18px;display:flex;flex-direction:column;gap:12px;background:var(--bg)}
+.fah-msg{display:flex;gap:9px;max-width:92%}
+.fah-msg .bubble{padding:11px 15px;border-radius:16px;font-size:13.5px;line-height:1.55}
+.fah-msg.bot{align-self:flex-start}
+.fah-msg.bot .bubble{background:#fff;border:1px solid var(--line);border-top-left-radius:4px;color:var(--ink)}
+.fah-mini{width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,#0ea5e9,#22c55e);display:grid;place-items:center;color:#fff;font-weight:900;font-size:11px;flex-shrink:0}
+.fah-quick{display:flex;flex-direction:column;gap:7px;padding:0 18px 14px;background:var(--bg)}
+.fah-quick .qlabel{font-size:11px;color:var(--muted);margin:2px 0 1px}
+.fah-quick button{font-family:inherit;font-size:12.5px;padding:10px 14px;border-radius:12px;background:#fff;border:1px solid var(--line);color:var(--ink);cursor:pointer;text-align:left;transition:all .15s}
+.fah-quick button:hover{background:var(--green-l);border-color:var(--green);color:var(--green-d)}
+.fah-foot{padding:12px 16px;border-top:1px solid var(--line);background:#fff;text-align:center}
+.fah-foot a{display:block;background:linear-gradient(135deg,#0ea5e9,#22c55e);color:#fff;text-decoration:none;font-weight:700;font-size:13.5px;padding:12px;border-radius:12px}
+@media(max-width:430px){.fah-btn .lb{display:none}.fah-btn{padding:0;width:60px;justify-content:center}}
+.fah-msg.user{align-self:flex-end;flex-direction:row-reverse;margin-left:auto}
+.fah-msg.user .bubble{background:linear-gradient(135deg,#0ea5e9,#22c55e);color:#fff;border-top-right-radius:4px;font-weight:500}
+.fah-quick{max-height:none}
+.fah-quick button{font-size:12px;padding:9px 13px}
 </style>
 </head>
 <body>
 <header>
-  <a href="https://rectokenasean.com" style="display:flex;align-items:center;gap:9px;text-decoration:none">
-    <img src="bolt-64.png" alt="RECTOKEN" style="height:30px;width:auto;object-fit:contain;display:block">
-    <span style="display:flex;align-items:baseline;gap:7px;font-weight:800;font-size:17px;letter-spacing:-.3px;color:var(--ink)">RECTOKEN <span style="font-size:9px;font-weight:700;background:var(--green-l);color:var(--green-d);padding:3px 7px;border-radius:99px;letter-spacing:1.1px">ASEAN</span></span>
-  </a>
-  <div class="sp"></div>
-  <a href="https://rectokenasean.com" class="btn-line" style="width:auto;padding:7px 12px;border-radius:9px;font-weight:700;font-size:12px;cursor:pointer;text-decoration:none;color:var(--ink);display:inline-flex;align-items:center;gap:5px" title="กลับหน้าหลัก">🏠 หน้าหลัก</a>
-  <button id="logoutBtn" class="btn-line hidden" style="width:auto;padding:7px 12px;border-radius:9px;font-weight:700;font-size:12px;cursor:pointer;margin-left:8px" onclick="logout()">ออก</button>
+<a href="https://rectokenasean.com" style="display:flex;align-items:center;gap:9px;text-decoration:none">
+<img src="bolt-64.png" alt="RECTOKEN" style="height:30px;width:auto;object-fit:contain;display:block">
+<span style="display:flex;align-items:baseline;gap:7px;font-weight:800;font-size:17px;letter-spacing:-.3px;color:var(--ink)">RECTOKEN <span style="font-size:9px;font-weight:700;background:var(--green-l);color:var(--green-d);padding:3px 7px;border-radius:99px;letter-spacing:1.1px">ASEAN</span></span>
+</a>
+<div class="sp"></div>
+<a href="https://rectokenasean.com" class="btn-line" style="width:auto;padding:7px 12px;border-radius:9px;font-weight:700;font-size:12px;cursor:pointer;text-decoration:none;color:var(--ink);display:inline-flex;align-items:center;gap:5px" title="กลับหน้าหลัก">🏠 หน้าหลัก</a>
+<button id="logoutBtn" class="btn-line hidden" style="width:auto;padding:7px 12px;border-radius:9px;font-weight:700;font-size:12px;cursor:pointer;margin-left:8px" onclick="logout()">ออก</button>
 </header>
 <div class="app">
-  <div id="view-auth">
-    <div class="card hero" style="margin-bottom:12px"><small>ราคาขาย REC</small><div class="price" id="hero-price">฿40.00 <span style="font-size:13px;font-weight:600">/ REC</span></div><small id="hero-note">ช่วงเปิดตัว ราคานี้ · หลังจากนั้นปรับเป็นราคาเฉลี่ยจาก exchange ทั่วโลก</small></div>
-    <div class="card">
-      <h1>เริ่มต้นใช้งาน</h1>
-      <p class="sub">ซื้อ REC เพื่อสนับสนุนพลังงานสะอาด แล้ว retire รับใบ Certificate — สมัครด้วยอีเมล ไม่ต้องยืนยันตัวตน</p>
-      <div class="seg"><button id="tab-signup" class="on" onclick="authTab('signup')">สมัคร</button><button id="tab-login" onclick="authTab('login')">เข้าสู่ระบบ</button></div>
-      <label>อีเมล <span style="color:var(--muted);font-weight:400">— ใช้เป็นชื่อผู้ใช้ (username) ของคุณ</span></label>
-      <input id="au-email" type="email" placeholder="you@email.com" autocomplete="email">
-      <label>รหัสผ่าน <span style="color:var(--muted);font-weight:400">— อย่างน้อย 6 ตัวอักษร</span></label>
-      <input id="au-pass" type="password" placeholder="••••••" autocomplete="new-password" oninput="checkPwMatch()">
-      <div id="pw2-wrap"><label>ยืนยันรหัสผ่านอีกครั้ง</label>
-        <input id="au-pass2" type="password" placeholder="••••••" autocomplete="new-password" oninput="checkPwMatch()"></div>
-      <div id="phone-wrap"><label>เบอร์มือถือ <span style="color:var(--muted);font-weight:400">— ไม่บังคับ (ไว้ติดต่อ/กู้บัญชี)</span></label>
-        <div style="display:flex;gap:8px">
-          <select id="au-cc" style="flex:0 0 116px;border:1.5px solid var(--line);border-radius:10px;padding:12px 8px;font-size:14px;font-family:inherit;background:#fff">
-            <option value="66" selected>🇹🇭 +66</option>
-            <option value="65">🇸🇬 +65</option>
-            <option value="60">🇲🇾 +60</option>
-            <option value="84">🇻🇳 +84</option>
-            <option value="62">🇮🇩 +62</option>
-            <option value="63">🇵🇭 +63</option>
-            <option value="856">🇱🇦 +856</option>
-            <option value="855">🇰🇭 +855</option>
-            <option value="95">🇲🇲 +95</option>
-            <option value="1">🇺🇸 +1</option>
-            <option value="44">🇬🇧 +44</option>
-            <option value="86">🇨🇳 +86</option>
-            <option value="81">🇯🇵 +81</option>
-          </select>
-          <input id="au-phone" type="tel" inputmode="numeric" placeholder="81 234 5678" autocomplete="tel" style="flex:1">
-        </div></div>
-      <div id="pw-msg" style="font-size:11.5px;margin-top:6px;min-height:14px"></div>
-      <button class="btn btn-primary" style="margin-top:12px" id="au-btn" onclick="doAuth()">สมัครและสร้าง Wallet</button>
-      <div class="banner" style="background:var(--green-l);border-color:#c9e9d4;color:var(--green-d)">🔐 <b>การสมัคร = สร้าง Wallet ให้คุณทันที</b> ตามอีเมลนี้ — เก็บอีเมลและรหัสผ่านไว้เป็นความลับ เพราะใช้เข้าถึง REC ในกระเป๋าของคุณ</div>
-      <div class="banner">REC = Utility Token พร้อมใช้ กลุ่ม 1 · REC Marketplace เป็นผู้ขายโทเคน ไม่ใช่ exchange ที่ได้รับใบอนุญาต ก.ล.ต. · การถือครองมีความเสี่ยง</div>
-    </div>
-  </div>
-  <div id="view-home" class="hidden">
-    <div class="card hero" style="margin-bottom:12px"><small>ราคาขาย REC</small><div class="price">฿<span id="home-price">40.00</span> <span style="font-size:13px;font-weight:600">/ REC</span></div><small id="home-note">ช่วงเปิดตัว ราคานี้ · หลังจากนั้นปรับเป็นราคาเฉลี่ยจาก exchange ทั่วโลก</small></div>
-    <div class="card wallet"><small id="w-id">—</small><div class="bal"><span id="w-rec">0</span> REC</div><small>≈ ฿<span id="w-thb">0</span> · <span id="w-type">custodial</span></small>
-      <div class="row"><button class="btn" style="background:rgba(255,255,255,.18);color:#fff" onclick="show('buy')">+ ซื้อ REC</button><button class="btn" style="background:rgba(255,255,255,.18);color:#fff" onclick="show('retire')">♻️ Retire</button></div></div>
-    <div class="card"><h2>ใบรับรองของฉัน</h2><div id="cert-list"><p class="sub">ยังไม่มี certificate — กด Retire เพื่อแลกเป็นใบรับรอง</p></div></div>
-    <div class="card"><h2>เชื่อม MetaMask (ทางเลือก)</h2><p class="sub">รับ REC แบบ non-custodial เข้ากระเป๋าของคุณเอง</p><button class="btn btn-dark" onclick="connectMetaMask()">🦊 เชื่อม MetaMask</button></div>
-    <div class="banner">REC = Utility Token พร้อมใช้ กลุ่ม 1 · REC Marketplace เป็นผู้ขายโทเคน ไม่ใช่ exchange ที่ได้รับใบอนุญาต ก.ล.ต. · การถือครองมีความเสี่ยง</div>
-  </div>
-  <div id="view-buy" class="hidden">
-    <div class="card"><h2>ซื้อ REC <span class="pill" style="float:right">฿<span id="buy-price">40</span>/REC</span></h2>
-      <div style="text-align:center;color:var(--muted);font-size:12px;margin-top:10px">จำนวน REC</div>
-      <input class="amt" id="buy-qty" type="number" value="1" min="1" step="1" oninput="buyCalc()" inputmode="numeric">
-      <div style="text-align:center;color:var(--muted);font-size:14px">= ฿<span id="buy-total">40.00</span></div>
-      <div class="chips"><button class="chip" onclick="setQ(1)">1</button><button class="chip" onclick="setQ(10)">10</button><button class="chip" onclick="setQ(25)">25</button><button class="chip" onclick="setQ(100)">100</button></div>
-      <p class="sub" style="font-size:11.5px;text-align:center">ขั้นต่ำ <b>1 เหรียญ</b> (PromptPay) · ชำระด้วย<b>บัตรเครดิต</b>ขั้นต่ำ <b>10 เหรียญ</b></p>
-      <p class="sub" style="font-size:11px">ขายทางเดียว ระบบไม่รับซื้อคืน — REC ใช้ถือครองหรือ retire รับ certificate</p>
-      <button class="btn btn-primary" onclick="show('pay')">ถัดไป</button>
-      <button class="btn btn-ghost" style="margin-top:8px" onclick="show('home')">ยกเลิก</button></div>
-  </div>
-  <div id="view-pay" class="hidden">
-    <div class="card"><h2>ชำระเงิน</h2>
-      <div class="seg"><button id="pm-pp" class="on" onclick="payTab('promptpay')">PromptPay</button><button id="pm-cc" onclick="payTab('card')">บัตรเครดิต</button></div>
-      <div id="card-min-note" class="hidden" style="font-size:11px;color:var(--amber,#b45309);text-align:center;margin-bottom:8px">บัตรเครดิตขั้นต่ำ 10 เหรียญ</div>
-      <div id="pp-box" style="text-align:center"><div class="qr"></div><div style="font-size:12px;color:var(--muted)">QR จะแสดงหลังกดยืนยัน</div></div>
-      <div id="cc-box" class="hidden" style="text-align:center;padding:14px 4px"><div style="font-size:13px;color:var(--muted);line-height:1.6">กด "ยืนยันชำระเงิน" เพื่อไปหน้าชำระเงินที่ปลอดภัยของ PaySolutions<br>รองรับบัตรเครดิต/เดบิต, ผ่อนชำระ, internet banking</div></div>
-      <div class="summary" style="margin-top:14px"><div><span>รับ</span><b><span id="pay-qty">25</span> REC</b></div><div class="tot"><span>ยอดชำระ</span><b>฿<span id="pay-total">1,000.00</span></b></div></div>
-      <button class="btn btn-primary" style="margin-top:14px" id="pay-btn" onclick="doBuy()">ยืนยันชำระเงิน</button>
-      <button class="btn btn-ghost" style="margin-top:8px" onclick="show('buy')">กลับ</button></div>
-  </div>
-  <div id="view-retire" class="hidden">
-    <div class="card"><h2>Retire REC รับ Certificate</h2>
-      <p class="sub">Retire = ใช้ REC ถาวรเพื่อชดเชยพลังงาน/คาร์บอน ระบบจะ burn เหรียญและออกใบรับรอง</p>
-      <label>จำนวน REC (มี <span id="r-avail">0</span>)</label><input id="r-qty" type="number" value="0" inputmode="numeric">
-      <label>ชื่อผู้รับใบรับรอง / Beneficiary <span style="color:var(--muted);font-weight:400">— ชื่อคุณหรือบริษัทที่จะใช้ยื่น ESG</span></label><input id="r-bene" placeholder="ชื่อ-นามสกุล หรือชื่อบริษัท">
-      <label>วัตถุประสงค์</label><input id="r-purpose" value="ชดเชย Scope 2 — ปี 2026">
-      <button class="btn btn-primary" style="margin-top:16px" id="r-btn" onclick="doRetire()">ยืนยัน Retire</button>
-      <button class="btn btn-ghost" style="margin-top:8px" onclick="show('home')">กลับ</button></div>
-  </div>
+<div id="view-auth">
+<div class="card hero" style="margin-bottom:12px"><small>ราคาขาย REC</small><div class="price" id="hero-price">฿40.00 <span style="font-size:13px;font-weight:600">/ REC</span></div><small id="hero-note">ช่วงเปิดตัว ราคานี้ · หลังจากนั้นปรับเป็นราคาเฉลี่ยจาก exchange ทั่วโลก</small></div>
+<div class="card">
+<h1>เริ่มต้นใช้งาน</h1>
+<p class="sub">ซื้อ REC เพื่อสนับสนุนพลังงานสะอาด แล้ว retire รับใบ Certificate — สมัครด้วยอีเมล ไม่ต้องยืนยันตัวตน</p>
+<div class="seg"><button id="tab-signup" class="on" onclick="authTab('signup')">สมัคร</button><button id="tab-login" onclick="authTab('login')">เข้าสู่ระบบ</button></div>
+<label>อีเมล <span style="color:var(--muted);font-weight:400">— ใช้เป็นชื่อผู้ใช้ (username) ของคุณ</span></label>
+<input id="au-email" type="email" placeholder="you@email.com" autocomplete="email">
+<label>รหัสผ่าน <span style="color:var(--muted);font-weight:400">— อย่างน้อย 6 ตัวอักษร</span></label>
+<input id="au-pass" type="password" placeholder="••••••" autocomplete="new-password" oninput="checkPwMatch()">
+<div id="pw2-wrap"><label>ยืนยันรหัสผ่านอีกครั้ง</label>
+<input id="au-pass2" type="password" placeholder="••••••" autocomplete="new-password" oninput="checkPwMatch()"></div>
+<div id="phone-wrap"><label>เบอร์มือถือ <span style="color:var(--muted);font-weight:400">— ไม่บังคับ (ไว้ติดต่อ/กู้บัญชี)</span></label>
+<div style="display:flex;gap:8px">
+<select id="au-cc" style="flex:0 0 116px;border:1.5px solid var(--line);border-radius:10px;padding:12px 8px;font-size:14px;font-family:inherit;background:#fff">
+<option value="66" selected>🇹🇭 +66</option>
+<option value="65">🇸🇬 +65</option>
+<option value="60">🇲🇾 +60</option>
+<option value="84">🇻🇳 +84</option>
+<option value="62">🇮🇩 +62</option>
+<option value="63">🇵🇭 +63</option>
+<option value="856">🇱🇦 +856</option>
+<option value="855">🇰🇭 +855</option>
+<option value="95">🇲🇲 +95</option>
+<option value="1">🇺🇸 +1</option>
+<option value="44">🇬🇧 +44</option>
+<option value="86">🇨🇳 +86</option>
+<option value="81">🇯🇵 +81</option>
+</select>
+<input id="au-phone" type="tel" inputmode="numeric" placeholder="81 234 5678" autocomplete="tel" style="flex:1">
+</div></div>
+<div id="pw-msg" style="font-size:11.5px;margin-top:6px;min-height:14px"></div>
+<button class="btn btn-primary" style="margin-top:12px" id="au-btn" onclick="doAuth()">สมัครและสร้าง Wallet</button>
+<div id="forgot-wrap" style="text-align:center;margin-top:10px">
+<a href="#" id="forgot-link" onclick="toggleForgot(event)" style="color:var(--green-d);font-size:13px;font-weight:600;text-decoration:none">ลืมรหัสผ่าน?</a>
+</div>
+<div id="forgot-box" class="hidden" style="margin-top:10px;border:1px solid var(--line);border-radius:12px;padding:12px;background:#f8fafc">
+<p class="sub" style="margin:0 0 8px;font-size:12px">กรอกอีเมลที่ใช้สมัคร ระบบจะส่ง<b>ลิงก์ตั้งรหัสผ่านใหม่</b>ไปให้ทางอีเมล — ลิงก์ใช้ได้ <b>30 นาที</b></p>
+<input id="forgot-email" type="email" placeholder="you@email.com" autocomplete="email">
+<button class="btn btn-primary" style="margin-top:10px" id="forgot-btn" onclick="doForgot()">ส่งลิงก์รีเซ็ต</button>
+<div id="forgot-msg" style="font-size:12px;margin-top:8px;min-height:14px"></div>
+</div>
+<script>
+function toggleForgot(e){if(e)e.preventDefault();var b=document.getElementById('forgot-box');b.classList.toggle('hidden');if(!b.classList.contains('hidden')){var src=document.getElementById('au-email');var t=document.getElementById('forgot-email');if(src&&src.value&&!t.value)t.value=src.value;t.focus();}}
+async function doForgot(){var t=document.getElementById('forgot-email');var msg=document.getElementById('forgot-msg');var btn=document.getElementById('forgot-btn');var email=(t.value||'').trim();if(!email){msg.style.color='#b45309';msg.textContent='กรุณากรอกอีเมล';return;}btn.disabled=true;btn.textContent='กำลังส่ง...';try{await fetch('/api/auth/request-reset',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:email})});}catch(err){}msg.style.color='var(--green-d)';msg.textContent='ถ้าอีเมลนี้มีในระบบ เราได้ส่งลิงก์ตั้งรหัสผ่านใหม่ไปแล้ว กรุณาเช็คกล่องจดหมาย (รวมโฟลเดอร์สแปม)';btn.textContent='ส่งแล้ว';}
+</script>
+<div class="banner" style="background:var(--green-l);border-color:#c9e9d4;color:var(--green-d)">🔐 <b>การสมัคร = สร้าง Wallet ให้คุณทันที</b> ตามอีเมลนี้ — เก็บอีเมลและรหัสผ่านไว้เป็นความลับ เพราะใช้เข้าถึง REC ในกระเป๋าของคุณ</div>
+<div class="banner">REC = Utility Token พร้อมใช้ กลุ่ม 1 · REC Marketplace เป็นผู้ขายโทเคน ไม่ใช่ exchange ที่ได้รับใบอนุญาต ก.ล.ต. · การถือครองมีความเสี่ยง</div>
+</div>
+</div>
+<div id="view-home" class="hidden">
+<div class="card hero" style="margin-bottom:12px"><small>ราคาขาย REC</small><div class="price">฿<span id="home-price">40.00</span> <span style="font-size:13px;font-weight:600">/ REC</span></div><small id="home-note">ช่วงเปิดตัว ราคานี้ · หลังจากนั้นปรับเป็นราคาเฉลี่ยจาก exchange ทั่วโลก</small></div>
+<div class="card wallet"><small id="w-id">—</small><div class="bal"><span id="w-rec">0</span> REC</div><small>≈ ฿<span id="w-thb">0</span> · <span id="w-type">custodial</span></small>
+<div class="row"><button class="btn" style="background:rgba(255,255,255,.18);color:#fff" onclick="show('buy')">+ ซื้อ REC</button><button class="btn" style="background:rgba(255,255,255,.18);color:#fff" onclick="show('retire')">♻️ Retire</button></div></div>
+<div class="card"><h2>ใบรับรองของฉัน</h2><div id="cert-list"><p class="sub">ยังไม่มี certificate — กด Retire เพื่อแลกเป็นใบรับรอง</p></div></div>
+<div class="card"><h2>เชื่อม MetaMask (ทางเลือก)</h2><p class="sub">รับ REC แบบ non-custodial เข้ากระเป๋าของคุณเอง</p><button class="btn btn-dark" onclick="connectMetaMask()">🦊 เชื่อม MetaMask</button></div>
+<div class="banner">REC = Utility Token พร้อมใช้ กลุ่ม 1 · REC Marketplace เป็นผู้ขายโทเคน ไม่ใช่ exchange ที่ได้รับใบอนุญาต ก.ล.ต. · การถือครองมีความเสี่ยง</div>
+</div>
+<div id="view-buy" class="hidden">
+<div class="card"><h2>ซื้อ REC <span class="pill" style="float:right">฿<span id="buy-price">40</span>/REC</span></h2>
+<div style="text-align:center;color:var(--muted);font-size:12px;margin-top:10px">จำนวน REC</div>
+<input class="amt" id="buy-qty" type="number" value="1" min="1" step="1" oninput="buyCalc()" inputmode="numeric">
+<div style="text-align:center;color:var(--muted);font-size:14px">= ฿<span id="buy-total">40.00</span></div>
+<div class="chips"><button class="chip" onclick="setQ(1)">1</button><button class="chip" onclick="setQ(10)">10</button><button class="chip" onclick="setQ(25)">25</button><button class="chip" onclick="setQ(100)">100</button></div>
+<p class="sub" style="font-size:11.5px;text-align:center">ขั้นต่ำ <b>1 เหรียญ</b> (PromptPay) · ชำระด้วย<b>บัตรเครดิต</b>ขั้นต่ำ <b>10 เหรียญ</b></p>
+<p class="sub" style="font-size:11px">ขายทางเดียว ระบบไม่รับซื้อคืน — REC ใช้ถือครองหรือ retire รับ certificate</p>
+<button class="btn btn-primary" onclick="show('pay')">ถัดไป</button>
+<button class="btn btn-ghost" style="margin-top:8px" onclick="show('home')">ยกเลิก</button></div>
+</div>
+<div id="view-pay" class="hidden">
+<div class="card"><h2>ชำระเงิน</h2>
+<div class="seg"><button id="pm-pp" class="on" onclick="payTab('promptpay')">PromptPay</button><button id="pm-cc" onclick="payTab('card')">บัตรเครดิต</button></div>
+<div id="card-min-note" class="hidden" style="font-size:11px;color:var(--amber,#b45309);text-align:center;margin-bottom:8px">บัตรเครดิตขั้นต่ำ 10 เหรียญ</div>
+<div id="pp-box" style="text-align:center"><div class="qr"></div><div style="font-size:12px;color:var(--muted)">QR จะแสดงหลังกดยืนยัน</div></div>
+<div id="cc-box" class="hidden" style="text-align:center;padding:14px 4px"><div style="font-size:13px;color:var(--muted);line-height:1.6">กด "ยืนยันชำระเงิน" เพื่อไปหน้าชำระเงินที่ปลอดภัยของ PaySolutions<br>รองรับบัตรเครดิต/เดบิต, ผ่อนชำระ, internet banking</div></div>
+<div class="summary" style="margin-top:14px"><div><span>รับ</span><b><span id="pay-qty">25</span> REC</b></div><div class="tot"><span>ยอดชำระ</span><b>฿<span id="pay-total">1,000.00</span></b></div></div>
+<button class="btn btn-primary" style="margin-top:14px" id="pay-btn" onclick="doBuy()">ยืนยันชำระเงิน</button>
+<button class="btn btn-ghost" style="margin-top:8px" onclick="show('buy')">กลับ</button></div>
+</div>
+<div id="view-retire" class="hidden">
+<div class="card"><h2>Retire REC รับ Certificate</h2>
+<p class="sub">Retire = ใช้ REC ถาวรเพื่อชดเชยพลังงาน/คาร์บอน ระบบจะ burn เหรียญและออกใบรับรอง</p>
+<label>จำนวน REC (มี <span id="r-avail">0</span>)</label><input id="r-qty" type="number" value="0" inputmode="numeric">
+<label>ชื่อผู้รับใบรับรอง / Beneficiary <span style="color:var(--muted);font-weight:400">— ชื่อคุณหรือบริษัทที่จะใช้ยื่น ESG</span></label><input id="r-bene" placeholder="ชื่อ-นามสกุล หรือชื่อบริษัท">
+<label>วัตถุประสงค์</label><input id="r-purpose" value="ชดเชย Scope 2 — ปี 2026">
+<button class="btn btn-primary" style="margin-top:16px" id="r-btn" onclick="doRetire()">ยืนยัน Retire</button>
+<button class="btn btn-ghost" style="margin-top:8px" onclick="show('home')">กลับ</button></div>
+</div>
 </div>
 <!-- ฟ้า AI assistant -->
 <button class="fah-btn" id="fahBtn" onclick="fahToggle()" aria-label="คุยกับฟ้า AI ผู้ช่วยซื้อขาย REC">
-  <span class="av">ฟ้า</span>
-  <span class="lb">ถามฟ้า AI<small>ผู้ช่วยซื้อขาย REC</small></span>
+<span class="av">ฟ้า</span>
+<span class="lb">ถามฟ้า AI<small>ผู้ช่วยซื้อขาย REC</small></span>
 </button>
 <div class="fah-panel" id="fahPanel">
-  <div class="fah-head">
-    <div class="av">ฟ้า</div>
-    <div><h4>ฟ้า AI</h4><div class="sub">ผู้ช่วยเรื่องซื้อขาย &amp; retire REC</div></div>
-    <button class="fah-close" onclick="fahToggle()">✕</button>
-  </div>
-  <div class="fah-body" id="fahBody">
-    <div class="fah-msg bot"><div class="fah-mini">ฟ้า</div><div class="bubble">สวัสดีค่ะ 🌱 ฟ้าช่วยเรื่อง <b>การซื้อขายและ retire REC</b> ที่นี่ได้เลยค่ะ<br>แตะคำถามด้านล่าง หรือพิมพ์ถามฟ้าก็ได้นะคะ</div></div>
-  </div>
-  <div class="fah-quick" id="fahQuick">
-    <button onclick="fahAns('buy')">💰 ซื้อ REC ยังไง? ขั้นตอนการซื้อ</button>
-    <button onclick="fahAns('retire')">♻️ Retire REC คืออะไร ทำยังไง</button>
-    <button onclick="fahAns('pay')">💳 ชำระเงิน &amp; ขั้นต่ำการซื้อ</button>
-    <button onclick="fahAns('what')">🪙 REC คืออะไร ซื้อแล้วได้อะไร</button>
-    <button onclick="fahAns('wallet')">👛 Wallet ของฉันอยู่ไหน เก็บ REC ยังไง</button>
-  </div>
-  <div class="fah-foot"><a href="https://fah.rectokenasean.com" target="_blank" rel="noopener">มีคำถามอื่น? คุยกับฟ้า AI เต็มรูปแบบ →</a></div>
+<div class="fah-head">
+<div class="av">ฟ้า</div>
+<div><h4>ฟ้า AI</h4><div class="sub">ผู้ช่วยเรื่องซื้อขาย &amp; retire REC</div></div>
+<button class="fah-close" onclick="fahToggle()">✕</button>
+</div>
+<div class="fah-body" id="fahBody">
+<div class="fah-msg bot"><div class="fah-mini">ฟ้า</div><div class="bubble">สวัสดีค่ะ 🌱 ฟ้าช่วยเรื่อง <b>การซื้อขายและ retire REC</b> ที่นี่ได้เลยค่ะ<br>แตะคำถามด้านล่าง หรือพิมพ์ถามฟ้าก็ได้นะคะ</div></div>
+</div>
+<div class="fah-quick" id="fahQuick">
+<button onclick="fahAns('buy')">💰 ซื้อ REC ยังไง? ขั้นตอนการซื้อ</button>
+<button onclick="fahAns('retire')">♻️ Retire REC คืออะไร ทำยังไง</button>
+<button onclick="fahAns('pay')">💳 ชำระเงิน &amp; ขั้นต่ำการซื้อ</button>
+<button onclick="fahAns('what')">🪙 REC คืออะไร ซื้อแล้วได้อะไร</button>
+<button onclick="fahAns('wallet')">👛 Wallet ของฉันอยู่ไหน เก็บ REC ยังไง</button>
+</div>
+<div class="fah-foot"><a href="https://fah.rectokenasean.com" target="_blank" rel="noopener">มีคำถามอื่น? คุยกับฟ้า AI เต็มรูปแบบ →</a></div>
 </div>
 <script src="config.js"></script>
 <script src="app.js"></script>
